@@ -36,7 +36,7 @@
 
 // Uncomment matching device name for NUX Mighty Plug / Nux Mighty Air:
 // NUX Mighty Plug
-#define MIDI_DEVICE_NAME "NUX MIGHTY PLUG MIDI"
+#define MIDI_DEVICE_NAME "MIGHTY PLUG PRO"
 // NUX Mighty Air
 // #define MIDI_DEVICE_NAME "NUX MIGHTY AIR MIDI"
 
