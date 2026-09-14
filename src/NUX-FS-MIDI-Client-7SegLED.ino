@@ -22,7 +22,7 @@
 //#include <hardware/BLEMIDI_ArduinoBLE.h>
 
 // Connect to the NUX BLE-MIDI service
-BLEMIDI_CREATE_INSTANCE("NUX MIGHTY PLUG MIDI", MIDI)       //Connect to a specific name server
+BLEMIDI_CREATE_INSTANCE("MIGHTY PLUG PRO", MIDI)       //Connect to a specific name server
 //BLEMIDI_CREATE_DEFAULT_INSTANCE(); //Connect to first server found
 //BLEMIDI_CREATE_INSTANCE("",MIDI)                  //Connect to the first server found
 //BLEMIDI_CREATE_INSTANCE("f2:c1:d9:36:e7:6b",MIDI) //Connect to a specific BLE address server
