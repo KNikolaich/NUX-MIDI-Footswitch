@@ -1,0 +1,319 @@
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:142:1: error: expected class-name before '{' token
+ {
+ ^
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h: In member function 'void bleMidi::AdvertisedDeviceCallbacks::onResult(NimBLEAdvertisedDevice*)':
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:119: error: no match for 'operator==' (operand types are 'const NimBLEAddress' and 'std::__cxx11::string' {aka 'std::__cxx11::basic_string<char>'})
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+In file included from c:\Users\FCuser\Documents\Arduino\libraries\NimBLE-Arduino.disabled\src/NimBLEClient.h:30,
+                 from c:\Users\FCuser\Documents\Arduino\libraries\NimBLE-Arduino.disabled\src/NimBLEDevice.h:280,
+                 from c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:12,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\NimBLE-Arduino.disabled\src/NimBLEAddress.h:64:26: note: candidate: 'bool NimBLEAddress::operator==(const NimBLEAddress&) const'
+     bool                 operator==(const NimBLEAddress& rhs) const;
+                          ^~~~~~~~
+c:\Users\FCuser\Documents\Arduino\libraries\NimBLE-Arduino.disabled\src/NimBLEAddress.h:64:26: note:   no known conversion for argument 1 from 'std::__cxx11::string' {aka 'std::__cxx11::basic_string<char>'} to 'const NimBLEAddress&'
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\utility:70,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\algorithm:60,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:184,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_pair.h:448:5: note: candidate: 'template<class _T1, class _T2> constexpr bool std::operator==(const std::pair<_T1, _T2>&, const std::pair<_T1, _T2>&)'
+     operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_pair.h:448:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::pair<_T1, _T2>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_algobase.h:67,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\algorithm:61,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:184,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_iterator.h:302:5: note: candidate: 'template<class _Iterator> bool std::operator==(const std::reverse_iterator<_Iterator>&, const std::reverse_iterator<_Iterator>&)'
+     operator==(const reverse_iterator<_Iterator>& __x,
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_iterator.h:302:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::reverse_iterator<_Iterator>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_algobase.h:67,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\algorithm:61,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:184,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_iterator.h:340:5: note: candidate: 'template<class _IteratorL, class _IteratorR> bool std::operator==(const std::reverse_iterator<_Iterator>&, const std::reverse_iterator<_IteratorR>&)'
+     operator==(const reverse_iterator<_IteratorL>& __x,
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_iterator.h:340:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::reverse_iterator<_Iterator>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_algobase.h:67,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\algorithm:61,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:184,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_iterator.h:1115:5: note: candidate: 'template<class _IteratorL, class _IteratorR> bool std::operator==(const std::move_iterator<_IteratorL>&, const std::move_iterator<_IteratorR>&)'
+     operator==(const move_iterator<_IteratorL>& __x,
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_iterator.h:1115:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::move_iterator<_IteratorL>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_algobase.h:67,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\algorithm:61,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:184,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_iterator.h:1121:5: note: candidate: 'template<class _Iterator> bool std::operator==(const std::move_iterator<_IteratorL>&, const std::move_iterator<_IteratorL>&)'
+     operator==(const move_iterator<_Iterator>& __x,
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_iterator.h:1121:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::move_iterator<_IteratorL>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\char_traits.h:40,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\string:40,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\stdexcept:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\array:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\tuple:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\functional:54,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:196,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\postypes.h:216:5: note: candidate: 'template<class _StateT> bool std::operator==(const std::fpos<_StateT>&, const std::fpos<_StateT>&)'
+     operator==(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\postypes.h:216:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::fpos<_StateT>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\string:41,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\stdexcept:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\array:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\tuple:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\functional:54,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:196,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\allocator.h:146:5: note: candidate: 'template<class _T1, class _T2> bool std::operator==(const std::allocator<_Tp>&, const std::allocator<_Tp>&)'
+     operator==(const allocator<_T1>&, const allocator<_T2>&)
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\allocator.h:146:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::allocator<_Tp>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\string:41,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\stdexcept:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\array:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\tuple:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\functional:54,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:196,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\allocator.h:152:5: note: candidate: 'template<class _Tp> bool std::operator==(const std::allocator<_Tp>&, const std::allocator<_Tp>&)'
+     operator==(const allocator<_Tp>&, const allocator<_Tp>&)
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\allocator.h:152:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::allocator<_Tp>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\string:52,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\stdexcept:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\array:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\tuple:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\functional:54,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:196,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\basic_string.h:6048:5: note: candidate: 'template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)'
+     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\basic_string.h:6048:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\string:52,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\stdexcept:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\array:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\tuple:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\functional:54,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:196,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\basic_string.h:6056:5: note: candidate: 'template<class _CharT> typename __gnu_cxx::__enable_if<std::__is_char<_Tp>::__value, bool>::__type std::operator==(const std::__cxx11::basic_string<_CharT>&, const std::__cxx11::basic_string<_CharT>&)'
+     operator==(const basic_string<_CharT>& __lhs,
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\basic_string.h:6056:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::__cxx11::basic_string<_CharT>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\string:52,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\stdexcept:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\array:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\tuple:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\functional:54,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:196,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\basic_string.h:6070:5: note: candidate: 'template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const _CharT*, const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&)'
+     operator==(const _CharT* __lhs,
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\basic_string.h:6070:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   mismatched types 'const _CharT*' and 'NimBLEAddress'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\string:52,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\stdexcept:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\array:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\tuple:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\functional:54,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:196,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\basic_string.h:6082:5: note: candidate: 'template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>&, const _CharT*)'
+     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\basic_string.h:6082:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::__cxx11::basic_string<_CharT, _Traits, _Alloc>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\tuple:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\functional:54,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:196,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\array:252:5: note: candidate: 'template<class _Tp, unsigned int _Nm> bool std::operator==(const std::array<_Tp, _Nm>&, const std::array<_Tp, _Nm>&)'
+     operator==(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\array:252:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::array<_Tp, _Nm>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\functional:54,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:196,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\tuple:1413:5: note: candidate: 'template<class ... _TElements, class ... _UElements> constexpr bool std::operator==(const std::tuple<_Tps ...>&, const std::tuple<_Elements ...>&)'
+     operator==(const tuple<_TElements...>& __t,
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\tuple:1413:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::tuple<_Tps ...>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\functional:59,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:196,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\std_function.h:745:5: note: candidate: 'template<class _Res, class ... _Args> bool std::operator==(const std::function<_Res(_ArgTypes ...)>&, std::nullptr_t)'
+     operator==(const function<_Res(_Args...)>& __f, nullptr_t) noexcept
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\std_function.h:745:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::function<_Res(_ArgTypes ...)>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\functional:59,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:196,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\std_function.h:751:5: note: candidate: 'template<class _Res, class ... _Args> bool std::operator==(std::nullptr_t, const std::function<_Res(_ArgTypes ...)>&)'
+     operator==(nullptr_t, const function<_Res(_Args...)>& __f) noexcept
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\std_function.h:751:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'std::__cxx11::string' {aka 'std::__cxx11::basic_string<char>'} is not derived from 'const std::function<_Res(_ArgTypes ...)>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\vector:64,
+                 from c:\Users\FCuser\Documents\Arduino\libraries\NimBLE-Arduino.disabled\src/NimBLEDevice.h:44,
+                 from c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:12,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_vector.h:1753:5: note: candidate: 'template<class _Tp, class _Alloc> bool std::operator==(const std::vector<_Tp, _Alloc>&, const std::vector<_Tp, _Alloc>&)'
+     operator==(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_vector.h:1753:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::vector<_Tp, _Alloc>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_algobase.h:67,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\algorithm:61,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:184,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_iterator.h:863:5: note: candidate: 'template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator==(const __gnu_cxx::__normal_iterator<_IteratorL, _Container>&, const __gnu_cxx::__normal_iterator<_IteratorR, _Container>&)'
+     operator==(const __normal_iterator<_IteratorL, _Container>& __lhs,
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_iterator.h:863:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const __gnu_cxx::__normal_iterator<_IteratorL, _Container>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_algobase.h:67,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\algorithm:61,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:184,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_iterator.h:870:5: note: candidate: 'template<class _Iterator, class _Container> bool __gnu_cxx::operator==(const __gnu_cxx::__normal_iterator<_Iterator, _Container>&, const __gnu_cxx::__normal_iterator<_Iterator, _Container>&)'
+     operator==(const __normal_iterator<_Iterator, _Container>& __lhs,
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\stl_iterator.h:870:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const __gnu_cxx::__normal_iterator<_Iterator, _Container>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\xtensa-esp32-elf\no-rtti\bits\c++allocator.h:33,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\bits\allocator.h:46,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\string:41,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\stdexcept:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\array:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\tuple:39,
+                 from c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\functional:54,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\2.0.17\cores\esp32/Arduino.h:196,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\ext\new_allocator.h:155:5: note: candidate: 'template<class _Tp> bool __gnu_cxx::operator==(const __gnu_cxx::new_allocator<_Tp>&, const __gnu_cxx::new_allocator<_Tp>&)'
+     operator==(const new_allocator<_Tp>&, const new_allocator<_Tp>&)
+     ^~~~~~~~
+c:\users\fcuser\appdata\local\arduino15\packages\esp32\tools\xtensa-esp32-elf-gcc\esp-2021r2-patch5-8.4.0\xtensa-esp32-elf\include\c++\8.4.0\ext\new_allocator.h:155:5: note:   template argument deduction/substitution failed:
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const __gnu_cxx::new_allocator<_Tp>'
+         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+                                                                                                                          ^~~~~~~~~~
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h: In member function 'void bleMidi::BLEMIDI_Client_ESP32<_Settings>::scan()':
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:458:19: error: 'class NimBLEScan' has no member named 'setAdvertisedDeviceCallbacks'
+         pBLEScan->setAdvertisedDeviceCallbacks(&myAdvCB);
+                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h: In member function 'bool bleMidi::BLEMIDI_Client_ESP32<_Settings>::connect()':
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:509:23: error: 'getClientListSize' is not a member of 'NimBLEDevice'
+     if (NimBLEDevice::getClientListSize() >= NIMBLE_MAX_CONNECTIONS)
+                       ^~~~~~~~~~~~~~~~~
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:509:46: error: 'NIMBLE_MAX_CONNECTIONS' was not declared in this scope
+     if (NimBLEDevice::getClientListSize() >= NIMBLE_MAX_CONNECTIONS)
+                                              ^~~~~~~~~~~~~~~~~~~~~~
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:509:46: note: suggested alternative: 'NIMBLE_BLE_CONNECT'
+     if (NimBLEDevice::getClientListSize() >= NIMBLE_MAX_CONNECTIONS)
+                                              ^~~~~~~~~~~~~~~~~~~~~~
+                                              NIMBLE_BLE_CONNECT
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h: In instantiation of 'bool bleMidi::BLEMIDI_Client_ESP32<_Settings>::begin(const char*, bleMidi::BLEMIDI_Transport<bleMidi::BLEMIDI_Client_ESP32<_Settings>, _Settings>*) [with _Settings = bleMidi::DefaultSettingsClient]':
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/BLEMIDI_Transport.h:57:9:   required from 'void bleMidi::BLEMIDI_Transport<T, _Settings>::begin() [with T = bleMidi::BLEMIDI_Client_ESP32<bleMidi::DefaultSettingsClient>; _Settings = bleMidi::DefaultSettingsClient]'
+c:\Users\FCuser\Documents\Arduino\libraries\MIDI_Library\src/MIDI.hpp:75:5:   required from 'midi::MidiInterface<Transport, Settings, Platform>& midi::MidiInterface<Transport, _Settings, _Platform>::begin(midi::Channel) [with Transport = bleMidi::BLEMIDI_Transport<bleMidi::BLEMIDI_Client_ESP32<bleMidi::DefaultSettingsClient>, bleMidi::DefaultSettingsClient>; _Settings = bleMidi::MySettings; _Platform = midi::DefaultPlatform; midi::Channel = unsigned char]'
+C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:215:31:   required from here
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:371:23: error: cannot convert 'bleMidi::BLEMIDI_Transport<bleMidi::BLEMIDI_Client_ESP32<bleMidi::DefaultSettingsClient>, bleMidi::DefaultSettingsClient>*' to 'bleMidi::BLEMIDI_Transport<bleMidi::BLEMIDI_Client_ESP32<bleMidi::DefaultSettingsClient>, bleMidi::DefaultSettings>*' in assignment
+     _bleMidiTransport = bleMidiTransport;
+     ~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+
+exit status 1
+
+Compilation error: exit status 1
