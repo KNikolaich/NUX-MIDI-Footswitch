@@ -1,0 +1,205 @@
+In file included from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:62:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:142:1: error: expected class-name before '{' token
+  142 | {
+      | ^
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h: In member function 'void bleMidi::AdvertisedDeviceCallbacks::onResult(NimBLEAdvertisedDevice*)':
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:119: error: no match for 'operator==' (operand types are 'const NimBLEAddress' and 'std::string' {aka 'std::__cxx11::basic_string<char>'})
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^~ ~~~~~~~~~~
+      |                                                                                                                    |     |
+      |                                                                                                                    |     std::string {aka std::__cxx11::basic_string<char>}
+      |                                                                                                                    const NimBLEAddress
+In file included from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/xtensa-esp-elf/esp32/psram/no-rtti/bits/c++allocator.h:33,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/allocator.h:46,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/alloc_traits.h:39,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/ext/alloc_traits.h:34,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/hashtable_policy.h:39,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/hashtable.h:35,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/unordered_map.h:33,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/unordered_map:41,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/functional:63,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\3.3.12\cores\esp32/HardwareSerial.h:49,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\3.3.12\cores\esp32/Arduino.h:202,
+                 from C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:60:
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/new_allocator.h:215:9: note: candidate: 'template<class _Up> constexpr bool std::operator==(const __new_allocator<char>&, const __new_allocator<_Tp>&)' (reversed)
+  215 |         operator==(const __new_allocator&, const __new_allocator<_Up>&)
+      |         ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/new_allocator.h:215:9: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::__new_allocator<_Tp>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+In file included from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algobase.h:64,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/specfun.h:43,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/cmath:3898,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/math.h:36,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\3.3.12\cores\esp32/esp32-hal.h:30,
+                 from C:\Users\FCuser\AppData\Local\Arduino15\packages\esp32\hardware\esp32\3.3.12\cores\esp32/Arduino.h:44:
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_pair.h:1010:5: note: candidate: 'template<class _T1, class _T2, class _U1, class _U2> constexpr bool std::operator==(const pair<_T1, _T2>&, const pair<_U1, _U2>&)' (reversed)
+ 1010 |     operator==(const pair<_T1, _T2>& __x, const pair<_U1, _U2>& __y)
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_pair.h:1010:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'std::string' {aka 'std::__cxx11::basic_string<char>'} is not derived from 'const std::pair<_T1, _T2>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+In file included from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_algobase.h:67:
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_iterator.h:527:5: note: candidate: 'template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}' (reversed)
+  527 |     operator==(const reverse_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_iterator.h:527:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'std::string' {aka 'std::__cxx11::basic_string<char>'} is not derived from 'const std::reverse_iterator<_IteratorL>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_iterator.h:1667:5: note: candidate: 'template<class _IteratorL, class _IteratorR> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorR>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}' (reversed)
+ 1667 |     operator==(const move_iterator<_IteratorL>& __x,
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_iterator.h:1667:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'std::string' {aka 'std::__cxx11::basic_string<char>'} is not derived from 'const std::move_iterator<_IteratorL>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+In file included from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/functional:53:
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/tuple:2556:5: note: candidate: 'template<class ... _TElements, class ... _UElements> constexpr bool std::operator==(const tuple<_UTypes ...>&, const tuple<_Elements ...>&)' (reversed)
+ 2556 |     operator==(const tuple<_TElements...>& __t,
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/tuple:2556:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'std::string' {aka 'std::__cxx11::basic_string<char>'} is not derived from 'const std::tuple<_UTypes ...>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+In file included from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/functional:59:
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/std_function.h:743:5: note: candidate: 'template<class _Res, class ... _Args> bool std::operator==(const function<_Res(_ArgTypes ...)>&, nullptr_t)' (reversed)
+  743 |     operator==(const function<_Res(_Args...)>& __f, nullptr_t) noexcept
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/std_function.h:743:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'std::string' {aka 'std::__cxx11::basic_string<char>'} is not derived from 'const std::function<_Res(_ArgTypes ...)>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/allocator.h:235:5: note: candidate: 'template<class _T1, class _T2> constexpr bool std::operator==(const allocator<_Up>&, const allocator<_T2>&)' (reversed)
+  235 |     operator==(const allocator<_T1>&, const allocator<_T2>&)
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/allocator.h:235:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'std::string' {aka 'std::__cxx11::basic_string<char>'} is not derived from 'const std::allocator<_Up>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+In file included from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/basic_string.h:47,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/string:54,
+                 from c:\Users\FCuser\Documents\Arduino\libraries\NimBLE-Arduino\src/NimBLEDevice.h:43,
+                 from c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:12:
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/string_view:609:5: note: candidate: 'template<class _CharT, class _Traits> constexpr bool std::operator==(basic_string_view<_CharT, _Traits>, type_identity_t<basic_string_view<_CharT, _Traits> >)' (reversed)
+  609 |     operator==(basic_string_view<_CharT, _Traits> __x,
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/string_view:609:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'std::__cxx11::basic_string<char>' is not derived from 'std::basic_string_view<_CharT, _Traits>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/basic_string.h:3772:5: note: candidate: 'template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const _CharT*)' (reversed)
+ 3772 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/basic_string.h:3772:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   mismatched types 'const _CharT*' and 'NimBLEAddress'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+In file included from c:\Users\FCuser\Documents\Arduino\libraries\NimBLE-Arduino\src/NimBLEClient.h:30,
+                 from c:\Users\FCuser\Documents\Arduino\libraries\NimBLE-Arduino\src/NimBLEDevice.h:280:
+c:\Users\FCuser\Documents\Arduino\libraries\NimBLE-Arduino\src/NimBLEAddress.h:64:26: note: candidate: 'bool NimBLEAddress::operator==(const NimBLEAddress&) const'
+   64 |     bool                 operator==(const NimBLEAddress& rhs) const;
+      |                          ^~~~~~~~
+c:\Users\FCuser\Documents\Arduino\libraries\NimBLE-Arduino\src/NimBLEAddress.h:64:58: note:   no known conversion for argument 1 from 'std::string' {aka 'std::__cxx11::basic_string<char>'} to 'const NimBLEAddress&'
+   64 |     bool                 operator==(const NimBLEAddress& rhs) const;
+      |                                     ~~~~~~~~~~~~~~~~~~~~~^~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_iterator.h:586:5: note: candidate: 'template<class _Iterator> constexpr bool std::operator==(const reverse_iterator<_IteratorL>&, const reverse_iterator<_IteratorL>&) requires requires{{std::operator==::__x->base() == std::operator==::__y->base()} -> decltype(auto) [requires std::convertible_to<<placeholder>, bool>];}'
+  586 |     operator==(const reverse_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_iterator.h:586:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::reverse_iterator<_IteratorL>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_iterator.h:1737:5: note: candidate: 'template<class _Iterator> constexpr bool std::operator==(const move_iterator<_IteratorL>&, const move_iterator<_IteratorL>&)'
+ 1737 |     operator==(const move_iterator<_Iterator>& __x,
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_iterator.h:1737:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::move_iterator<_IteratorL>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/unordered_map.h:2144:5: note: candidate: 'template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)'
+ 2144 |     operator==(const unordered_map<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/unordered_map.h:2144:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::unordered_map<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/unordered_map.h:2158:5: note: candidate: 'template<class _Key1, class _Tp1, class _Hash1, class _Pred1, class _Alloc1> bool std::operator==(const unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&, const unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>&)'
+ 2158 |     operator==(const unordered_multimap<_Key, _Tp, _Hash, _Pred, _Alloc>& __x,
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/unordered_map.h:2158:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::unordered_multimap<_Key1, _Tp1, _Hash1, _Pred1, _Alloc1>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+In file included from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/vector:66,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/functional:64:
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_vector.h:2050:5: note: candidate: 'template<class _Tp, class _Alloc> constexpr bool std::operator==(const vector<_Tp, _Alloc>&, const vector<_Tp, _Alloc>&)'
+ 2050 |     operator==(const vector<_Tp, _Alloc>& __x, const vector<_Tp, _Alloc>& __y)
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/stl_vector.h:2050:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::vector<_Tp, _Alloc>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+In file included from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/functional:65:
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/array:303:5: note: candidate: 'template<class _Tp, unsigned int _Nm> constexpr bool std::operator==(const array<_Tp, _Nm>&, const array<_Tp, _Nm>&)'
+  303 |     operator==(const array<_Tp, _Nm>& __one, const array<_Tp, _Nm>& __two)
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/array:303:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::array<_Tp, _Nm>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+In file included from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/char_traits.h:42,
+                 from C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/string:42:
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/postypes.h:192:5: note: candidate: 'template<class _StateT> bool std::operator==(const fpos<_StateT>&, const fpos<_StateT>&)'
+  192 |     operator==(const fpos<_StateT>& __lhs, const fpos<_StateT>& __rhs)
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/postypes.h:192:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::fpos<_StateT>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/basic_string.h:3755:5: note: candidate: 'template<class _CharT, class _Traits, class _Alloc> constexpr bool std::operator==(const __cxx11::basic_string<_CharT, _Traits, _Allocator>&, const __cxx11::basic_string<_CharT, _Traits, _Allocator>&)'
+ 3755 |     operator==(const basic_string<_CharT, _Traits, _Alloc>& __lhs,
+      |     ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/basic_string.h:3755:5: note:   template argument deduction/substitution failed:
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:168:122: note:   'const NimBLEAddress' is not derived from 'const std::__cxx11::basic_string<_CharT, _Traits, _Allocator>'
+  168 |         if (!(!specificTarget || (advertisedDevice->getName() == nameTarget.c_str() || advertisedDevice->getAddress() == nameTarget)))
+      |                                                                                                                          ^~~~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/allocator.h:214:7: note: candidate: 'constexpr bool std::operator==(const allocator<char>&, const allocator<char>&)'
+  214 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |       ^~~~~~~~
+C:/Users/FCuser/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2601/xtensa-esp-elf/include/c++/14.2.0/bits/allocator.h:214:18: note:   no known conversion for argument 1 from 'const NimBLEAddress' to 'const std::allocator<char>&'
+  214 |       operator==(const allocator&, const allocator&) _GLIBCXX_NOTHROW
+      |                  ^~~~~~~~~~~~~~~~
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h: In member function 'void bleMidi::BLEMIDI_Client_ESP32<_Settings>::scan()':
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:458:19: error: 'class NimBLEScan' has no member named 'setAdvertisedDeviceCallbacks'
+  458 |         pBLEScan->setAdvertisedDeviceCallbacks(&myAdvCB);
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h: In member function 'bool bleMidi::BLEMIDI_Client_ESP32<_Settings>::connect()':
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:509:23: error: 'getClientListSize' is not a member of 'NimBLEDevice'
+  509 |     if (NimBLEDevice::getClientListSize() >= NIMBLE_MAX_CONNECTIONS)
+      |                       ^~~~~~~~~~~~~~~~~
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:509:46: error: 'NIMBLE_MAX_CONNECTIONS' was not declared in this scope; did you mean 'NIMBLE_BLE_CONNECT'?
+  509 |     if (NimBLEDevice::getClientListSize() >= NIMBLE_MAX_CONNECTIONS)
+      |                                              ^~~~~~~~~~~~~~~~~~~~~~
+      |                                              NIMBLE_BLE_CONNECT
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h: In instantiation of 'bool bleMidi::BLEMIDI_Client_ESP32<_Settings>::begin(const char*, bleMidi::BLEMIDI_Transport<bleMidi::BLEMIDI_Client_ESP32<_Settings>, _Settings>*) [with _Settings = bleMidi::DefaultSettingsClient]':
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/BLEMIDI_Transport.h:57:24:   required from 'void bleMidi::BLEMIDI_Transport<T, _Settings>::begin() [with T = bleMidi::BLEMIDI_Client_ESP32<bleMidi::DefaultSettingsClient>; _Settings = bleMidi::DefaultSettingsClient]'
+   57 |         mBleClass.begin(mDeviceName, this);
+      |         ~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+c:\Users\FCuser\Documents\Arduino\libraries\MIDI_Library\src/MIDI.hpp:75:21:   required from 'midi::MidiInterface<Transport, Settings, Platform>& midi::MidiInterface<Transport, _Settings, _Platform>::begin(midi::Channel) [with Transport = bleMidi::BLEMIDI_Transport<bleMidi::BLEMIDI_Client_ESP32<bleMidi::DefaultSettingsClient>, bleMidi::DefaultSettingsClient>; _Settings = bleMidi::MySettings; _Platform = midi::DefaultPlatform; midi::Channel = unsigned char]'
+   75 |     mTransport.begin();
+      |     ~~~~~~~~~~~~~~~~^~
+C:\Users\FCuser\Documents\!Git\!MyProjs\NUX-MIDI-Footswitch\src\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder\NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder.ino:215:13:   required from here
+  215 |   MIDI.begin(MIDI_CHANNEL_OMNI);
+      |   ~~~~~~~~~~^~~~~~~~~~~~~~~~~~~
+c:\Users\FCuser\Documents\Arduino\libraries\BLE-MIDI\src/hardware/BLEMIDI_Client_ESP32.h:371:25: error: cannot convert 'bleMidi::BLEMIDI_Transport<bleMidi::BLEMIDI_Client_ESP32<bleMidi::DefaultSettingsClient>, bleMidi::DefaultSettingsClient>*' to 'bleMidi::BLEMIDI_Transport<bleMidi::BLEMIDI_Client_ESP32<bleMidi::DefaultSettingsClient>, bleMidi::DefaultSettings>*' in assignment
+  371 |     _bleMidiTransport = bleMidiTransport;
+      |                         ^~~~~~~~~~~~~~~~
+      |                         |
+      |                         bleMidi::BLEMIDI_Transport<bleMidi::BLEMIDI_Client_ESP32<bleMidi::DefaultSettingsClient>, bleMidi::DefaultSettingsClient>*
+
+exit status 1
+
+Compilation error: exit status 1
