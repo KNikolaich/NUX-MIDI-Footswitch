@@ -11,6 +11,8 @@ There are currently three variants of the code:
 
 - Generic ESP32 module with external OLED display: This variant is based on a generic ESP32 microcontroller and  implements a wirelesss footswitch with four buttons, an optional analog volume pedal and an external SSD1306 OLED display. This version also uses two switches to increment and decrement the effects, the other two buttons set the effect to the lowest and highest effect bank. The OLED display shows the selected effect, the level of the volume pedal (optional) and the connection status. This variant also supports as an option the connection of an external analog pedal to control the master volume level of the NUX device
 
+- AI-Thinker ESP32-CAM with rotary encoder and 128x32 OLED: The sketch in `src/NUX-Pro-FS-MIDI-Client-ESP32CAM-Encoder-OLED` targets the MIGHTY PLUG PRO. Turning the encoder selects one of seven presets and pressing it returns to preset 1. The camera and microSD are not used. Power the encoder from 3.3 V because ESP32 GPIO pins are not 5 V tolerant; see the sketch header for wiring and upload notes.
+
 The code in all variants is able to handle MIDI effect-switching-events sent from the NUX Mighty device to synchronize the selected effect between footswitch and NUX device. This ensures that the indicated effect of the footswitch and the NUX Mighty device are always in sync - even if you switch the selected effects at the NUX device.
 
 # Included libraries
