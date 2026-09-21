@@ -23,6 +23,38 @@
  * Select the TTGO T-Display setup in TFT_eSPI/User_Setup_Select.h.
  * It is usually named Setup25_TTGO_T_Display.h and configures the
  * ST7789 pins used by the original TTGO T-Display.
+
+Что он делает:
+
+подключается к MIGHTY PLUG PRO по BLE-MIDI;
+использует встроенный цветной ST7789-дисплей TTGO T-Display;
+вращением энкодера переключает 7 presets;
+нажатием на энкодер возвращается к preset 1;
+синхронизирует номер preset, если он изменён непосредственно на MIGHTY PLUG PRO;
+оставляет UART для Serial Monitor на скорости 115200.
+Распиновка энкодера:
+
+CLK > GPIO25
+DT  > GPIO26
+SW  > GPIO27
+VCC > 3.3V
+GND > GND
+
+Питание энкодера обязательно от 3.3 В. На GPIO ESP32 нельзя подавать 5 В.
+
+Для Arduino IDE нужно установить:
+
+Arduino BLE-MIDI от lathoub;
+MIDI Library от FortySevenEffects;
+TFT_eSPI от Bodmer.
+В настройках TFT_eSPI нужно выбрать конфигурацию:
+
+Setup25_TTGO_T_Display.h
+
+Обычно это делается в файле:
+
+TFT_eSPI/User_Setup_Select.h
+
  */
 
 #include <Arduino.h>
