@@ -15,6 +15,8 @@ There are currently three variants of the code:
 
 - TTGO T-Display ESP32 with rotary encoder: The sketch in `src/NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder` uses the built-in ST7789 135x240 TFT and targets the MIGHTY PLUG PRO. Turning the encoder selects one of seven presets and pressing it returns to preset 1. The encoder uses CLK=GPIO25, DT=GPIO26, SW=GPIO27 and must be powered from 3.3 V. This variant keeps GPIO1/GPIO3 available for Serial Monitor and requires the `TFT_eSPI` library with the TTGO T-Display setup selected.
 
+- ESP32 DevKit / ESP32-WROOM-32 with rotary encoder and no display: The minimal sketch in `src/NUX-Pro-FS-MIDI-Client-ESP32-DevKit-Encoder` targets the MIGHTY PLUG PRO. It uses CLK=GPIO25, DT=GPIO26, SW=GPIO27, switches seven presets, returns to preset 1 on encoder press, and reports BLE/preset status through Serial Monitor at 115200 baud. It requires no display library.
+
 The code in all variants is able to handle MIDI effect-switching-events sent from the NUX Mighty device to synchronize the selected effect between footswitch and NUX device. This ensures that the indicated effect of the footswitch and the NUX Mighty device are always in sync - even if you switch the selected effects at the NUX device.
 
 # Included libraries
