@@ -7,8 +7,9 @@
  *
  * IMPORTANT:
  * - Power the encoder and OLED from 3.3 V. ESP32 GPIO pins are not 5 V tolerant.
- * - GPIO1/GPIO3 are reused for I2C because the ESP32-CAM has very few free pins.
- *   Disconnect the OLED while uploading if it interferes with programming.
+ * - GPIO1/GPIO3 remain available for Serial Monitor at 115200 baud.
+ * - GPIO2 is a bootstrapping pin. Disconnect the OLED while uploading if the
+ *   board does not enter download mode; reconnect it after flashing.
  * - Do not initialize the camera or microSD while using this pin assignment.
  *
  * Required Arduino libraries:
@@ -29,8 +30,8 @@
 #define PIN_ENCODER_CLK 13
 #define PIN_ENCODER_DT 14
 #define PIN_ENCODER_SW 15
-#define OLED_SDA 3
-#define OLED_SCL 1
+#define OLED_SDA 2
+#define OLED_SCL 4
 #define OLED_ADDRESS 0x3c
 
 SSD1306Wire display(
@@ -91,6 +92,8 @@ void showEffect()
 void sendCurrentEffect()
 {
   // MIGHTY PLUG PRO switches presets with MIDI Program Change.
+  Serial.print("Sending preset: ");
+  Serial.println(currentEffect + 1);
   MIDI.sendProgramChange(currentEffect, 1);
   showEffect();
 }
@@ -151,6 +154,10 @@ void midiReadTask(void *parameter)
 
 void setup()
 {
+  Serial.begin(115200);
+  Serial.println();
+  Serial.println("NUX MIDI footswitch starting");
+
   pinMode(PIN_ENCODER_CLK, INPUT_PULLUP);
   pinMode(PIN_ENCODER_DT, INPUT_PULLUP);
   pinMode(PIN_ENCODER_SW, INPUT_PULLUP);
@@ -170,18 +177,22 @@ void setup()
   BLEMIDI.setHandleConnected([]() {
     isConnected = true;
     requestInitialPreset = true;
+    Serial.println("BLE-MIDI connected to MIGHTY PLUG PRO");
     showStatus("NUX: CONNECTED");
   });
 
   BLEMIDI.setHandleDisconnected([]() {
     isConnected = false;
     requestInitialPreset = false;
+    Serial.println("BLE-MIDI disconnected; scanning");
     showStatus("NUX: SEARCH");
   });
 
   MIDI.setHandleProgramChange([](byte channel, byte program) {
     if (program < MAX_EFFECT_COUNT) {
       currentEffect = program;
+      Serial.print("Preset received: ");
+      Serial.println(currentEffect + 1);
       showEffect();
     }
   });
