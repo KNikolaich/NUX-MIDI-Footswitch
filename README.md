@@ -13,6 +13,8 @@ There are currently three variants of the code:
 
 - AI-Thinker ESP32-CAM with rotary encoder and 128x32 OLED: The sketch in `src/NUX-Pro-FS-MIDI-Client-ESP32CAM-Encoder-OLED` targets the MIGHTY PLUG PRO. Turning the encoder selects one of seven presets and pressing it returns to preset 1. The camera and microSD are not used. Power the encoder from 3.3 V because ESP32 GPIO pins are not 5 V tolerant. The current wiring is encoder CLK=GPIO13, DT=GPIO14, SW=GPIO15; OLED SDA=GPIO2, SCL=GPIO4. GPIO1/GPIO3 remain available for the Serial Monitor at 115200 baud. GPIO2 is a bootstrapping pin, so disconnect the OLED during upload if the board cannot enter download mode; see the sketch header for details.
 
+- TTGO T-Display ESP32 with rotary encoder: The sketch in `src/NUX-Pro-FS-MIDI-Client-TTGO-T-Display-Encoder` uses the built-in ST7789 135x240 TFT and targets the MIGHTY PLUG PRO. Turning the encoder selects one of seven presets and pressing it returns to preset 1. The encoder uses CLK=GPIO25, DT=GPIO26, SW=GPIO27 and must be powered from 3.3 V. This variant keeps GPIO1/GPIO3 available for Serial Monitor and requires the `TFT_eSPI` library with the TTGO T-Display setup selected.
+
 The code in all variants is able to handle MIDI effect-switching-events sent from the NUX Mighty device to synchronize the selected effect between footswitch and NUX device. This ensures that the indicated effect of the footswitch and the NUX Mighty device are always in sync - even if you switch the selected effects at the NUX device.
 
 # Included libraries
