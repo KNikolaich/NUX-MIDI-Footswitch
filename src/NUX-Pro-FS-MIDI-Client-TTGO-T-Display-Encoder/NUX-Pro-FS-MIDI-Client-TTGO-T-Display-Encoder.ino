@@ -9,11 +9,15 @@
  * Built-in button wiring on TTGO T-Display V1.1:
  *   PRESET UP -> GPIO35
  *   SEND PRESET -> GPIO0
+ *   BATTERY ADC -> GPIO34 (measurement divider enabled by GPIO14)
  *
  * GPIO35 is input-only and has no internal pull-up. The TTGO board normally
  * provides the required button circuit; verify the board schematic if using
  * an external switch. GPIO0 is a boot-strap pin, so do not hold its button
  * while resetting or powering the board.
+ *
+ * Battery percentage is an estimate based on the measured Li-ion voltage:
+ * 3.30 V is treated as empty and 4.20 V as full.
  *
  * Required Arduino libraries:
  * - Arduino BLE-MIDI by lathoub
@@ -65,6 +69,12 @@ TFT_eSPI/User_Setup_Select.h
 #define MIDI_DEVICE_NAME "cb:4e:fd:a3:6c:1b"
 #define MAX_EFFECT_COUNT 7
 #define PRESET_SYNC_TIMEOUT_MS 2000UL
+#define BATTERY_REFRESH_INTERVAL_MS 5000UL
+#define PIN_BATTERY_ADC 34
+#define PIN_BATTERY_ENABLE 14
+#define BATTERY_DIVIDER_RATIO 2.0f
+#define BATTERY_EMPTY_VOLTAGE 3.30f
+#define BATTERY_FULL_VOLTAGE 4.20f
 
 #define PIN_PRESET_UP 35
 #define PIN_SEND_PRESET 0
@@ -77,8 +87,12 @@ bool requestInitialPreset = false;
 bool waitingForInitialPreset = false;
 unsigned long presetSyncStartedAt = 0;
 byte currentEffect = 0;
+const char *screenStatus = "SEARCHING...";
+float batteryVoltage = 0.0f;
+uint8_t batteryPercent = 0;
 
 unsigned long lastBleStatusAt = 0;
+unsigned long lastBatteryReadAt = 0;
 unsigned long lastPresetUpChangeAt = 0;
 unsigned long lastSendPresetChangeAt = 0;
 bool lastPresetUpReading = HIGH;
@@ -86,30 +100,105 @@ bool lastSendPresetReading = HIGH;
 bool presetUpState = HIGH;
 bool sendPresetState = HIGH;
 
-void drawHeader(const char *status)
+uint8_t batteryPercentFromVoltage(float voltage)
+{
+  if (voltage <= BATTERY_EMPTY_VOLTAGE)
+    return 0;
+  if (voltage >= BATTERY_FULL_VOLTAGE)
+    return 100;
+
+  const float range = BATTERY_FULL_VOLTAGE - BATTERY_EMPTY_VOLTAGE;
+  return (uint8_t)(((voltage - BATTERY_EMPTY_VOLTAGE) / range) * 100.0f + 0.5f);
+}
+
+void readBattery()
+{
+  // The TTGO board powers the battery divider only while measuring it.
+  digitalWrite(PIN_BATTERY_ENABLE, HIGH);
+  delayMicroseconds(100);
+
+  uint32_t millivolts = 0;
+  const uint8_t sampleCount = 8;
+  for (uint8_t i = 0; i < sampleCount; i++)
+    millivolts += analogReadMilliVolts(PIN_BATTERY_ADC);
+
+  digitalWrite(PIN_BATTERY_ENABLE, LOW);
+
+  batteryVoltage =
+    (millivolts / (float)sampleCount) / 1000.0f * BATTERY_DIVIDER_RATIO;
+  batteryPercent = batteryPercentFromVoltage(batteryVoltage);
+
+  Serial.print("Battery: ");
+  Serial.print(batteryVoltage, 2);
+  Serial.print(" V (");
+  Serial.print(batteryPercent);
+  Serial.println("%)");
+}
+
+void drawBattery()
+{
+  const uint16_t batteryColor =
+    batteryPercent <= 20 ? TFT_RED :
+    batteryPercent <= 50 ? TFT_YELLOW :
+    TFT_GREEN;
+
+  tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
+  tft.drawString("BATTERY", 4, 62, 1);
+
+  tft.drawRect(4, 76, 62, 10, TFT_DARKGREY);
+  tft.fillRect(66, 79, 3, 4, TFT_DARKGREY);
+  const int fillWidth = (int)(56.0f * batteryPercent / 100.0f);
+  if (fillWidth > 0)
+    tft.fillRect(7, 79, fillWidth, 4, batteryColor);
+
+  tft.setTextColor(batteryColor, TFT_BLACK);
+  tft.drawString(String(batteryVoltage, 2) + "V", 4, 94, 1);
+  tft.drawString(String(batteryPercent) + "%", 52, 94, 1);
+}
+
+void drawScreen()
 {
   tft.fillScreen(TFT_BLACK);
+  tft.setTextDatum(TL_DATUM);
+
+  // The preset number is the primary information on the right.
+  tft.drawFastVLine(99, 0, 135, TFT_DARKGREY);
   tft.setTextColor(TFT_CYAN, TFT_BLACK);
-  tft.setTextDatum(TC_DATUM);
-  tft.drawString("NUX MIDI FOOTSWITCH", 120, 8, 2);
+  tft.drawString("NUX FOOTSWITCH", 4, 4, 1);
+
   tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
-  tft.drawString(status, 120, 34, 2);
+  tft.drawString(screenStatus, 4, 20, 1);
+  tft.drawString("UP GPIO35", 4, 38, 1);
+  tft.drawString("SEND GPIO0", 4, 49, 1);
+  drawBattery();
+
+  tft.setTextDatum(MC_DATUM);
+  tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
+  tft.drawString("PRESET", 169, 17, 2);
+  tft.setTextColor(TFT_GREEN, TFT_BLACK);
+  tft.drawNumber(currentEffect + 1, 169, 77, 8);
 }
 
 void showStatus(const char *status)
 {
-  drawHeader(status);
-  tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-  tft.drawString("MIGHTY PLUG PRO", 120, 72, 2);
+  screenStatus = status;
+  drawScreen();
 }
 
 void showEffect()
 {
-  drawHeader(isConnected ? "CONNECTED" : "DISCONNECTED");
-  tft.setTextColor(TFT_WHITE, TFT_BLACK);
-  tft.drawString("PRESET", 120, 60, 2);
-  tft.setTextColor(TFT_GREEN, TFT_BLACK);
-  tft.drawNumber(currentEffect + 1, 120, 82, 6);
+  screenStatus = isConnected ? "CONNECTED" : "DISCONNECTED";
+  drawScreen();
+}
+
+void updateBattery()
+{
+  if (millis() - lastBatteryReadAt < BATTERY_REFRESH_INTERVAL_MS)
+    return;
+
+  lastBatteryReadAt = millis();
+  readBattery();
+  drawScreen();
 }
 
 void requestCurrentPreset()
@@ -247,10 +336,16 @@ void setup()
   // provides the required bias; use an external pull-up for added switches.
   pinMode(PIN_PRESET_UP, INPUT);
   pinMode(PIN_SEND_PRESET, INPUT_PULLUP);
+  pinMode(PIN_BATTERY_ENABLE, OUTPUT);
+  digitalWrite(PIN_BATTERY_ENABLE, LOW);
+  analogReadResolution(12);
+  analogSetPinAttenuation(PIN_BATTERY_ADC, ADC_11db);
 
   tft.init();
   tft.setRotation(1);
   tft.setTextFont(2);
+  readBattery();
+  lastBatteryReadAt = millis();
   showStatus("SEARCHING...");
 
   MIDI.begin(MIDI_CHANNEL_OMNI);
@@ -297,6 +392,7 @@ void setup()
 void loop()
 {
   readButtons();
+  updateBattery();
 
   if (!isConnected) {
     if (millis() - lastBleStatusAt >= 2000) {
