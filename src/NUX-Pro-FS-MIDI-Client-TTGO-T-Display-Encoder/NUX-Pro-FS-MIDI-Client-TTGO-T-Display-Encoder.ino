@@ -63,7 +63,8 @@ TFT_eSPI/User_Setup_Select.h
 #include <hardware/BLEMIDI_Client_ESP32.h>
 #include <TFT_eSPI.h>
 
-#define MIDI_DEVICE_NAME "MIGHTY PLUG PRO"
+// #define MIDI_DEVICE_NAME "MIGHTY PLUG PRO"
+#define MIDI_DEVICE_NAME "cb:4e:fd:a3:6c:1b"
 #define MAX_EFFECT_COUNT 7
 
 // These GPIOs are available on the original TTGO T-Display and do not drive
