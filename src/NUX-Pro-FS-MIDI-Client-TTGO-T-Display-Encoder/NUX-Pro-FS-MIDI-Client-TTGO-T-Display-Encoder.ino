@@ -2,17 +2,18 @@
  * BLE-MIDI footswitch for NUX MIGHTY PLUG PRO.
  *
  * Target board: TTGO T-Display ESP32 (ST7789 135x240 TFT).
- * Controls: mechanical rotary encoder; pressing the encoder selects preset 1.
+ * Controls: the built-in GPIO35 button selects the next preset; the built-in
+ * GPIO0 button sends the currently selected preset.
  * The built-in TFT displays BLE status and the selected preset.
  *
- * Encoder wiring:
- *   CLK -> GPIO25
- *   DT  -> GPIO26
- *   SW  -> GPIO27
- *   VCC -> 3.3V
- *   GND -> GND
+ * Built-in button wiring on TTGO T-Display V1.1:
+ *   PRESET UP -> GPIO35
+ *   SEND PRESET -> GPIO0
  *
- * The encoder must be powered from 3.3 V. ESP32 GPIO pins are not 5 V tolerant.
+ * GPIO35 is input-only and has no internal pull-up. The TTGO board normally
+ * provides the required button circuit; verify the board schematic if using
+ * an external switch. GPIO0 is a boot-strap pin, so do not hold its button
+ * while resetting or powering the board.
  *
  * Required Arduino libraries:
  * - Arduino BLE-MIDI by lathoub
@@ -28,19 +29,16 @@
 
 подключается к MIGHTY PLUG PRO по BLE-MIDI;
 использует встроенный цветной ST7789-дисплей TTGO T-Display;
-вращением энкодера переключает 7 presets;
-нажатием на энкодер возвращается к preset 1;
+кнопкой GPIO35 переключает 7 presets вверх;
+кнопкой GPIO0 отправляет выбранный preset в NUX;
 синхронизирует номер preset, если он изменён непосредственно на MIGHTY PLUG PRO;
 оставляет UART для Serial Monitor на скорости 115200.
-Распиновка энкодера:
+Кнопки уже установлены на плате TTGO T-Display V1.1:
 
-CLK > GPIO25
-DT  > GPIO26
-SW  > GPIO27
-VCC > 3.3V
-GND > GND
+PRESET UP > GPIO35
+SEND PRESET > GPIO0
 
-Питание энкодера обязательно от 3.3 В. На GPIO ESP32 нельзя подавать 5 В.
+GPIO0 нельзя удерживать в LOW во время сброса или включения питания.
 
 Для Arduino IDE нужно установить:
 
