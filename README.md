@@ -17,6 +17,10 @@ There are currently three variants of the code:
 
 - ESP32 DevKit / ESP32-WROOM-32 with rotary encoder and no display: The minimal sketch in `src/NUX-Pro-FS-MIDI-Client-ESP32-DevKit-Encoder` targets the MIGHTY PLUG PRO. Turning the encoder selects one of seven presets and pressing it returns to preset 1. The encoder uses CLK=GPIO25, DT=GPIO26, SW=GPIO27 and must be powered from 3.3 V. It reports BLE/preset status through Serial Monitor at 115200 baud and requires no display library.
 
+- ESP32 DevKit BLE-MIDI CC scanner: The separate experimental project in `src/NUX-MIDI-ESP32-CC-Scanner` hosts a password-protected WiFi access point and browser interface. It can send one `Control Change`, sweep a CC value list over a selected MIDI channel range with Start/Pause/Stop, and capture incoming Control Change and Program Change messages. The NUX target, WiFi AP credentials and HTTP Basic Auth credentials are saved in ESP32 NVS. The browser also provides an OTA firmware upload page. SysEx is not sent or captured; bank-select, RPN/NRPN, data-entry, reset and all-notes/system CC numbers are blocked, and sweep speed is limited to a minimum 250 ms interval. The sketch prints the AP credentials and all HTTP endpoints to Serial Monitor at 115200 baud.
+
+  To use the scanner, open the `.ino` file from that folder in Arduino IDE, select an ESP32 Dev Module, and upload it. The default AP is `NUX-Scanner` with password `nux12345`; the default HTTP login is `admin` with password `nux12345`. Connect a phone or laptop to the AP and open `http://192.168.4.1/`. Change the NUX BLE name/MAC and credentials on the Settings page; they are saved to NVS and applied after the automatic restart. Keep the NUX output volume low while testing unfamiliar CC values.
+
 The code in all variants is able to handle MIDI effect-switching-events sent from the NUX Mighty device to synchronize the selected effect between footswitch and NUX device. This ensures that the indicated effect of the footswitch and the NUX Mighty device are always in sync - even if you switch the selected effects at the NUX device.
 
 # Included libraries

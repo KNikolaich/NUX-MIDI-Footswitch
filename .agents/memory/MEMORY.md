@@ -1,1 +1,2 @@
 - [NUX MIDI protocol](nux-mighty-plug-pro-midi.md) — Mighty Plug Pro uses Program Change for presets and private SysEx for current-preset retrieval.
+- [ESP32 validation](esp32-validation.md) — Arduino toolchain is unavailable in the container; verify embedded sketches in Arduino IDE on the target board.
