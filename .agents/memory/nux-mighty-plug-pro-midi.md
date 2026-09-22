@@ -10,3 +10,5 @@ description: Verified messages for preset switching and current-preset retrieval
 **Why:** Исходный проект `mightier_amp` использует Program Change для Plug Pro и отдельный SysEx-запрос текущего канала; отправка `CC 49` давала локальный Serial-лог без реакции NUX.
 
 **How to apply:** При изменениях TTGO/DevKit для Mighty Plug Pro использовать Program Change для выбора preset и не считать отправку `CC 49` запросом состояния.
+
+Аппаратная проверка подтвердила: `Program Change` реально переключает preset на Mighty Plug Pro. Запрос текущего preset при подключении пока не даёт ответа в Serial, поэтому это отдельная нерешённая часть протокола.
