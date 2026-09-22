@@ -84,6 +84,7 @@ bool requestInitialPreset = false;
 byte currentEffect = 0;
 
 unsigned long lastButtonChangeAt = 0;
+unsigned long lastBleStatusAt = 0;
 bool lastButtonReading = HIGH;
 bool buttonState = HIGH;
 
@@ -254,8 +255,17 @@ void setup()
 void loop()
 {
   if (!isConnected) {
+    if (millis() - lastBleStatusAt >= 2000) {
+      lastBleStatusAt = millis();
+      Serial.println("BLE: searching for MIGHTY PLUG PRO...");
+    }
     delay(5);
     return;
+  }
+
+  if (millis() - lastBleStatusAt >= 5000) {
+    lastBleStatusAt = millis();
+    Serial.println("BLE: connected");
   }
 
   if (requestInitialPreset) {
