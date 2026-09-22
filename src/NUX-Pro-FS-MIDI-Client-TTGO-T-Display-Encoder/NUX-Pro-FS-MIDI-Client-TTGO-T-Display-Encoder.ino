@@ -2,19 +2,28 @@
  * BLE-MIDI footswitch for NUX MIGHTY PLUG PRO.
  *
  * Target board: TTGO T-Display ESP32 (ST7789 135x240 TFT).
- * Controls: the built-in GPIO35 button selects the next preset; the built-in
- * GPIO0 button sends the currently selected preset.
+ * Controls: the built-in GPIO35 and GPIO0 buttons recall two quick presets.
+ * A rotary encoder selects any preset and its push button sends the selection.
  * The built-in TFT displays BLE status and the selected preset.
  *
  * Built-in button wiring on TTGO T-Display V1.1:
- *   PRESET UP -> GPIO35
- *   SEND PRESET -> GPIO0
+ *   QUICK PRESET 1 -> GPIO35
+ *   QUICK PRESET 2 -> GPIO0
  *   BATTERY ADC -> GPIO34 (measurement divider enabled by GPIO14)
+ *
+ * External encoder wiring:
+ *   CLK -> GPIO25
+ *   DT  -> GPIO26
+ *   SW  -> GPIO27
+ *   VCC -> 3.3V
+ *   GND -> GND
  *
  * GPIO35 is input-only and has no internal pull-up. The TTGO board normally
  * provides the required button circuit; verify the board schematic if using
  * an external switch. GPIO0 is a boot-strap pin, so do not hold its button
  * while resetting or powering the board.
+ * The encoder must be powered from 3.3 V because ESP32 GPIO pins are not 5 V
+ * tolerant.
  *
  * Battery percentage is an estimate based on the measured Li-ion voltage:
  * 3.30 V is treated as empty and 4.20 V as full.
@@ -33,14 +42,20 @@
 
 подключается к MIGHTY PLUG PRO по BLE-MIDI;
 использует встроенный цветной ST7789-дисплей TTGO T-Display;
-кнопкой GPIO35 переключает 7 presets вверх;
-кнопкой GPIO0 отправляет выбранный preset в NUX;
+кнопками GPIO35 и GPIO0 мгновенно выбирает preset 1 и preset 5;
+encoder выбирает любой из 7 presets по кругу;
+кнопка encoder отправляет выбранный preset в NUX;
 синхронизирует номер preset, если он изменён непосредственно на MIGHTY PLUG PRO;
 оставляет UART для Serial Monitor на скорости 115200.
 Кнопки уже установлены на плате TTGO T-Display V1.1:
 
-PRESET UP > GPIO35
-SEND PRESET > GPIO0
+QUICK PRESET 1 > GPIO35
+QUICK PRESET 2 > GPIO0
+
+Encoder:
+CLK > GPIO25
+DT  > GPIO26
+SW  > GPIO27
 
 GPIO0 нельзя удерживать в LOW во время сброса или включения питания.
 
@@ -68,6 +83,8 @@ TFT_eSPI/User_Setup_Select.h
 // #define MIDI_DEVICE_NAME "MIGHTY PLUG PRO"
 #define MIDI_DEVICE_NAME "cb:4e:fd:a3:6c:1b"
 #define MAX_EFFECT_COUNT 7
+#define QUICK_PRESET_A 1
+#define QUICK_PRESET_B 5
 #define PRESET_SYNC_TIMEOUT_MS 2000UL
 #define BATTERY_REFRESH_INTERVAL_MS 5000UL
 #define PIN_BATTERY_ADC 34
@@ -76,11 +93,17 @@ TFT_eSPI/User_Setup_Select.h
 #define BATTERY_EMPTY_VOLTAGE 3.30f
 #define BATTERY_FULL_VOLTAGE 4.20f
 
-#define PIN_PRESET_UP 35
-#define PIN_SEND_PRESET 0
+#define PIN_QUICK_PRESET_A 35
+#define PIN_QUICK_PRESET_B 0
+#define PIN_ENCODER_CLK 25
+#define PIN_ENCODER_DT 26
+#define PIN_ENCODER_SW 27
 
 TFT_eSPI tft = TFT_eSPI();
 BLEMIDI_CREATE_INSTANCE(MIDI_DEVICE_NAME, MIDI)
+
+volatile int8_t encoderMovement = 0;
+volatile uint8_t previousEncoderState = 0;
 
 bool isConnected = false;
 bool requestInitialPreset = false;
@@ -93,12 +116,15 @@ uint8_t batteryPercent = 0;
 
 unsigned long lastBleStatusAt = 0;
 unsigned long lastBatteryReadAt = 0;
-unsigned long lastPresetUpChangeAt = 0;
-unsigned long lastSendPresetChangeAt = 0;
-bool lastPresetUpReading = HIGH;
-bool lastSendPresetReading = HIGH;
-bool presetUpState = HIGH;
-bool sendPresetState = HIGH;
+unsigned long lastQuickPresetAChangeAt = 0;
+unsigned long lastQuickPresetBChangeAt = 0;
+bool lastQuickPresetAReading = HIGH;
+bool lastQuickPresetBReading = HIGH;
+bool quickPresetAState = HIGH;
+bool quickPresetBState = HIGH;
+unsigned long lastEncoderButtonChangeAt = 0;
+bool lastEncoderButtonReading = HIGH;
+bool encoderButtonState = HIGH;
 
 uint8_t batteryPercentFromVoltage(float voltage)
 {
@@ -143,17 +169,17 @@ void drawBattery()
     TFT_GREEN;
 
   tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
-  tft.drawString("BATTERY", 4, 62, 1);
+  tft.drawString("BATTERY", 4, 68, 1);
 
-  tft.drawRect(4, 76, 62, 10, TFT_DARKGREY);
-  tft.fillRect(66, 79, 3, 4, TFT_DARKGREY);
+  tft.drawRect(4, 82, 62, 10, TFT_DARKGREY);
+  tft.fillRect(66, 85, 3, 4, TFT_DARKGREY);
   const int fillWidth = (int)(56.0f * batteryPercent / 100.0f);
   if (fillWidth > 0)
-    tft.fillRect(7, 79, fillWidth, 4, batteryColor);
+    tft.fillRect(7, 85, fillWidth, 4, batteryColor);
 
   tft.setTextColor(batteryColor, TFT_BLACK);
-  tft.drawString(String(batteryVoltage, 2) + "V", 4, 94, 1);
-  tft.drawString(String(batteryPercent) + "%", 52, 94, 1);
+  tft.drawString(String(batteryVoltage, 2) + "V", 4, 100, 1);
+  tft.drawString(String(batteryPercent) + "%", 52, 100, 1);
 }
 
 void drawScreen()
@@ -168,8 +194,9 @@ void drawScreen()
 
   tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
   tft.drawString(screenStatus, 4, 20, 1);
-  tft.drawString("UP GPIO35", 4, 38, 1);
-  tft.drawString("SEND GPIO0", 4, 49, 1);
+  tft.drawString("GPIO35 -> P1", 4, 35, 1);
+  tft.drawString("GPIO0  -> P5", 4, 46, 1);
+  tft.drawString("ENC SW -> SEND", 4, 57, 1);
   drawBattery();
 
   tft.setTextDatum(MC_DATUM);
@@ -266,12 +293,68 @@ void sendCurrentEffect()
   showEffect();
 }
 
+void sendPresetNumber(uint8_t presetNumber)
+{
+  if (presetNumber < 1 || presetNumber > MAX_EFFECT_COUNT)
+    return;
+
+  currentEffect = presetNumber - 1;
+  Serial.print("Quick preset selected: ");
+  Serial.println(presetNumber);
+  sendCurrentEffect();
+}
+
+void IRAM_ATTR handleEncoder()
+{
+  const uint8_t state =
+    (digitalRead(PIN_ENCODER_CLK) << 1) | digitalRead(PIN_ENCODER_DT);
+
+  // Gray-code transition table. Invalid/bouncing transitions add zero.
+  static const int8_t transitions[16] = {
+     0, -1,  1,  0,
+     1,  0,  0, -1,
+    -1,  0,  0,  1,
+     0,  1, -1,  0
+  };
+
+  encoderMovement += transitions[(previousEncoderState << 2) | state];
+  previousEncoderState = state;
+}
+
 void selectNextEffect()
 {
   currentEffect = (currentEffect + 1) % MAX_EFFECT_COUNT;
   Serial.print("Selected preset: ");
   Serial.println(currentEffect + 1);
   showEffect();
+}
+
+void selectPreviousEffect()
+{
+  currentEffect =
+    currentEffect == 0 ? MAX_EFFECT_COUNT - 1 : currentEffect - 1;
+  Serial.print("Selected preset: ");
+  Serial.println(currentEffect + 1);
+  showEffect();
+}
+
+void readEncoder()
+{
+  int8_t movement;
+
+  noInterrupts();
+  movement = encoderMovement;
+  // Most mechanical encoders produce four valid transitions per detent.
+  if (movement >= 4)
+    encoderMovement -= 4;
+  else if (movement <= -4)
+    encoderMovement += 4;
+  interrupts();
+
+  if (movement >= 4)
+    selectNextEffect();
+  else if (movement <= -4)
+    selectPreviousEffect();
 }
 
 bool buttonWasPressed(
@@ -296,23 +379,36 @@ bool buttonWasPressed(
   return false;
 }
 
-void readButtons()
+void readQuickPresetButtons()
 {
   if (buttonWasPressed(
-        PIN_PRESET_UP,
-        lastPresetUpReading,
-        presetUpState,
-        lastPresetUpChangeAt
+        PIN_QUICK_PRESET_A,
+        lastQuickPresetAReading,
+        quickPresetAState,
+        lastQuickPresetAChangeAt
       )) {
-    selectNextEffect();
+    sendPresetNumber(QUICK_PRESET_A);
   }
 
   if (buttonWasPressed(
-        PIN_SEND_PRESET,
-        lastSendPresetReading,
-        sendPresetState,
-        lastSendPresetChangeAt
+        PIN_QUICK_PRESET_B,
+        lastQuickPresetBReading,
+        quickPresetBState,
+        lastQuickPresetBChangeAt
       )) {
+    sendPresetNumber(QUICK_PRESET_B);
+  }
+}
+
+void readEncoderButton()
+{
+  if (buttonWasPressed(
+        PIN_ENCODER_SW,
+        lastEncoderButtonReading,
+        encoderButtonState,
+        lastEncoderButtonChangeAt
+      )) {
+    Serial.println("Encoder pressed: sending selected preset");
     sendCurrentEffect();
   }
 }
@@ -330,12 +426,31 @@ void setup()
   Serial.begin(115200);
   Serial.println();
   Serial.println("NUX MIDI footswitch starting");
-  Serial.println("Buttons: PRESET UP=GPIO35, SEND PRESET=GPIO0");
+  Serial.println("Quick presets: GPIO35=P1, GPIO0=P5");
+  Serial.println("Encoder: CLK=25, DT=26, SW=27");
 
   // GPIO35 has no internal pull-up. The TTGO button circuit normally
   // provides the required bias; use an external pull-up for added switches.
-  pinMode(PIN_PRESET_UP, INPUT);
-  pinMode(PIN_SEND_PRESET, INPUT_PULLUP);
+  pinMode(PIN_QUICK_PRESET_A, INPUT);
+  pinMode(PIN_QUICK_PRESET_B, INPUT_PULLUP);
+  pinMode(PIN_ENCODER_CLK, INPUT_PULLUP);
+  pinMode(PIN_ENCODER_DT, INPUT_PULLUP);
+  pinMode(PIN_ENCODER_SW, INPUT_PULLUP);
+
+  previousEncoderState =
+    (digitalRead(PIN_ENCODER_CLK) << 1) | digitalRead(PIN_ENCODER_DT);
+
+  attachInterrupt(
+    digitalPinToInterrupt(PIN_ENCODER_CLK),
+    handleEncoder,
+    CHANGE
+  );
+  attachInterrupt(
+    digitalPinToInterrupt(PIN_ENCODER_DT),
+    handleEncoder,
+    CHANGE
+  );
+
   pinMode(PIN_BATTERY_ENABLE, OUTPUT);
   digitalWrite(PIN_BATTERY_ENABLE, LOW);
   analogReadResolution(12);
@@ -391,7 +506,9 @@ void setup()
 
 void loop()
 {
-  readButtons();
+  readQuickPresetButtons();
+  readEncoder();
+  readEncoderButton();
   updateBattery();
 
   if (!isConnected) {
