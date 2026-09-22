@@ -65,43 +65,23 @@ TFT_eSPI/User_Setup_Select.h
 #define MIDI_DEVICE_NAME "cb:4e:fd:a3:6c:1b"
 #define MAX_EFFECT_COUNT 7
 
-// These GPIOs are available on the original TTGO T-Display and do not drive
-// the built-in TFT. Do not use 0, 4, 5, 16, 18, 19 or 23 for the encoder.
-#define PIN_ENCODER_CLK 25
-#define PIN_ENCODER_DT 26
-#define PIN_ENCODER_SW 27
+#define PIN_PRESET_UP 35
+#define PIN_SEND_PRESET 0
 
 TFT_eSPI tft = TFT_eSPI();
 BLEMIDI_CREATE_INSTANCE(MIDI_DEVICE_NAME, MIDI)
-
-volatile int8_t encoderMovement = 0;
-volatile uint8_t previousEncoderState = 0;
 
 bool isConnected = false;
 bool requestInitialPreset = false;
 byte currentEffect = 0;
 
-unsigned long lastButtonChangeAt = 0;
 unsigned long lastBleStatusAt = 0;
-bool lastButtonReading = HIGH;
-bool buttonState = HIGH;
-
-void IRAM_ATTR handleEncoder()
-{
-  const uint8_t state =
-    (digitalRead(PIN_ENCODER_CLK) << 1) | digitalRead(PIN_ENCODER_DT);
-
-  // Gray-code transition table. Invalid/bouncing transitions add zero.
-  static const int8_t transitions[16] = {
-     0, -1,  1,  0,
-     1,  0,  0, -1,
-    -1,  0,  0,  1,
-     0,  1, -1,  0
-  };
-
-  encoderMovement += transitions[(previousEncoderState << 2) | state];
-  previousEncoderState = state;
-}
+unsigned long lastPresetUpChangeAt = 0;
+unsigned long lastSendPresetChangeAt = 0;
+bool lastPresetUpReading = HIGH;
+bool lastSendPresetReading = HIGH;
+bool presetUpState = HIGH;
+bool sendPresetState = HIGH;
 
 void drawHeader(const char *status)
 {
@@ -132,55 +112,66 @@ void showEffect()
 void sendCurrentEffect()
 {
   // The MIGHTY PLUG PRO beta protocol uses CC 49 for preset switching.
+  if (!isConnected) {
+    Serial.println("Cannot send preset: BLE-MIDI is not connected");
+    showEffect();
+    return;
+  }
+
   Serial.print("Sending preset: ");
   Serial.println(currentEffect + 1);
   MIDI.sendControlChange(49, currentEffect, 1);
   showEffect();
 }
 
-void setEffect(int effect)
+void selectNextEffect()
 {
-  if (effect < 0)
-    effect = MAX_EFFECT_COUNT - 1;
-  else if (effect >= MAX_EFFECT_COUNT)
-    effect = 0;
-
-  currentEffect = effect;
-  sendCurrentEffect();
+  currentEffect = (currentEffect + 1) % MAX_EFFECT_COUNT;
+  Serial.print("Selected preset: ");
+  Serial.println(currentEffect + 1);
+  showEffect();
 }
 
-void readEncoder()
+bool buttonWasPressed(
+  uint8_t pin,
+  bool &lastReading,
+  bool &stableState,
+  unsigned long &lastChangeAt
+)
 {
-  int8_t movement;
+  const bool reading = digitalRead(pin);
 
-  noInterrupts();
-  movement = encoderMovement;
-  // Most mechanical encoders produce four valid transitions per detent.
-  if (movement >= 4)
-    encoderMovement -= 4;
-  else if (movement <= -4)
-    encoderMovement += 4;
-  interrupts();
-
-  if (movement >= 4)
-    setEffect(currentEffect + 1);
-  else if (movement <= -4)
-    setEffect(currentEffect - 1);
-}
-
-void readEncoderButton()
-{
-  const bool reading = digitalRead(PIN_ENCODER_SW);
-
-  if (reading != lastButtonReading) {
-    lastButtonChangeAt = millis();
-    lastButtonReading = reading;
+  if (reading != lastReading) {
+    lastChangeAt = millis();
+    lastReading = reading;
   }
 
-  if ((millis() - lastButtonChangeAt) >= 30 && reading != buttonState) {
-    buttonState = reading;
-    if (buttonState == LOW)
-      setEffect(0);
+  if ((millis() - lastChangeAt) >= 30 && reading != stableState) {
+    stableState = reading;
+    return stableState == LOW;
+  }
+
+  return false;
+}
+
+void readButtons()
+{
+  if (buttonWasPressed(
+        PIN_PRESET_UP,
+        lastPresetUpReading,
+        presetUpState,
+        lastPresetUpChangeAt
+      )) {
+    selectNextEffect();
+  }
+
+  if (buttonWasPressed(
+        PIN_SEND_PRESET,
+        lastSendPresetReading,
+        sendPresetState,
+        lastSendPresetChangeAt
+      )) {
+    sendCurrentEffect();
   }
 }
 
@@ -197,16 +188,12 @@ void setup()
   Serial.begin(115200);
   Serial.println();
   Serial.println("NUX MIDI footswitch starting");
+  Serial.println("Buttons: PRESET UP=GPIO35, SEND PRESET=GPIO0");
 
-  pinMode(PIN_ENCODER_CLK, INPUT_PULLUP);
-  pinMode(PIN_ENCODER_DT, INPUT_PULLUP);
-  pinMode(PIN_ENCODER_SW, INPUT_PULLUP);
-
-  previousEncoderState =
-    (digitalRead(PIN_ENCODER_CLK) << 1) | digitalRead(PIN_ENCODER_DT);
-
-  attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_CLK), handleEncoder, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_DT), handleEncoder, CHANGE);
+  // GPIO35 has no internal pull-up. The TTGO button circuit normally
+  // provides the required bias; use an external pull-up for added switches.
+  pinMode(PIN_PRESET_UP, INPUT);
+  pinMode(PIN_SEND_PRESET, INPUT_PULLUP);
 
   tft.init();
   tft.setRotation(1);
@@ -252,6 +239,8 @@ void setup()
 
 void loop()
 {
+  readButtons();
+
   if (!isConnected) {
     if (millis() - lastBleStatusAt >= 2000) {
       lastBleStatusAt = millis();
@@ -274,7 +263,5 @@ void loop()
     showEffect();
   }
 
-  readEncoder();
-  readEncoderButton();
   delay(1);
 }

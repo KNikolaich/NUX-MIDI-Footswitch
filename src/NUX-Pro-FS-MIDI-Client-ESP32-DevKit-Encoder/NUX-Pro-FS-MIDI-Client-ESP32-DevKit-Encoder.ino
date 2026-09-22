@@ -5,15 +5,14 @@
  * This version has no display. Status and preset changes are printed to
  * Serial Monitor at 115200 baud.
  *
- * Button wiring:
- *   PRESET UP button -> GPIO35
- *   SEND PRESET button -> GPIO0
+ * Mechanical encoder wiring:
+ *   CLK -> GPIO25
+ *   DT  -> GPIO26
+ *   SW  -> GPIO27
+ *   VCC -> 3.3V
+ *   GND -> GND
  *
- * GPIO35 is input-only and has no internal pull-up. Use an external 10 kOhm
- * pull-up from GPIO35 to 3.3 V and connect the button between GPIO35 and GND.
- * GPIO0 uses the ESP32 internal pull-up; connect its button between GPIO0 and
- * GND. GPIO0 is a boot-strap pin, so do not hold this button while resetting
- * or powering the board, or the ESP32 may enter download mode.
+ * The encoder must be powered from 3.3 V. ESP32 GPIO pins are not 5 V tolerant.
  *
  * Required Arduino libraries:
  * - Arduino BLE-MIDI by lathoub
@@ -28,21 +27,39 @@
 #define MIDI_DEVICE_NAME "MIGHTY PLUG PRO"
 #define MAX_EFFECT_COUNT 7
 
-#define PIN_PRESET_UP 35
-#define PIN_SEND_PRESET 0
+#define PIN_ENCODER_CLK 25
+#define PIN_ENCODER_DT 26
+#define PIN_ENCODER_SW 27
 
 BLEMIDI_CREATE_INSTANCE(MIDI_DEVICE_NAME, MIDI)
+
+volatile int8_t encoderMovement = 0;
+volatile uint8_t previousEncoderState = 0;
 
 bool isConnected = false;
 bool requestInitialPreset = false;
 byte currentEffect = 0;
 
-unsigned long lastPresetUpChangeAt = 0;
-unsigned long lastSendPresetChangeAt = 0;
-bool lastPresetUpReading = HIGH;
-bool lastSendPresetReading = HIGH;
-bool presetUpState = HIGH;
-bool sendPresetState = HIGH;
+unsigned long lastButtonChangeAt = 0;
+bool lastButtonReading = HIGH;
+bool buttonState = HIGH;
+
+void IRAM_ATTR handleEncoder()
+{
+  const uint8_t state =
+    (digitalRead(PIN_ENCODER_CLK) << 1) | digitalRead(PIN_ENCODER_DT);
+
+  // Gray-code transition table. Invalid/bouncing transitions add zero.
+  static const int8_t transitions[16] = {
+     0, -1,  1,  0,
+     1,  0,  0, -1,
+    -1,  0,  0,  1,
+     0,  1, -1,  0
+  };
+
+  encoderMovement += transitions[(previousEncoderState << 2) | state];
+  previousEncoderState = state;
+}
 
 void printPreset()
 {
@@ -53,63 +70,56 @@ void printPreset()
 void sendCurrentEffect()
 {
   // MIGHTY PLUG PRO uses CC 49 for preset switching.
-  if (!isConnected) {
-    Serial.println("Cannot send preset: BLE-MIDI is not connected");
-    return;
-  }
-
   Serial.print("Sending preset: ");
   Serial.println(currentEffect + 1);
   MIDI.sendControlChange(49, currentEffect, 1);
 }
 
-void selectNextEffect()
+void setEffect(int effect)
 {
-  currentEffect = (currentEffect + 1) % MAX_EFFECT_COUNT;
-  Serial.print("Selected preset: ");
-  Serial.println(currentEffect + 1);
+  if (effect < 0)
+    effect = MAX_EFFECT_COUNT - 1;
+  else if (effect >= MAX_EFFECT_COUNT)
+    effect = 0;
+
+  currentEffect = effect;
+  sendCurrentEffect();
 }
 
-bool buttonWasPressed(
-  uint8_t pin,
-  bool &lastReading,
-  bool &stableState,
-  unsigned long &lastChangeAt
-)
+void readEncoder()
 {
-  const bool reading = digitalRead(pin);
+  int8_t movement;
 
-  if (reading != lastReading) {
-    lastChangeAt = millis();
-    lastReading = reading;
-  }
+  noInterrupts();
+  movement = encoderMovement;
+  // Most mechanical encoders produce four valid transitions per detent.
+  if (movement >= 4)
+    encoderMovement -= 4;
+  else if (movement <= -4)
+    encoderMovement += 4;
+  interrupts();
 
-  if ((millis() - lastChangeAt) >= 30 && reading != stableState) {
-    stableState = reading;
-    return stableState == LOW;
-  }
-
-  return false;
+  if (movement >= 4)
+    setEffect(currentEffect + 1);
+  else if (movement <= -4)
+    setEffect(currentEffect - 1);
 }
 
-void readButtons()
+void readEncoderButton()
 {
-  if (buttonWasPressed(
-        PIN_PRESET_UP,
-        lastPresetUpReading,
-        presetUpState,
-        lastPresetUpChangeAt
-      )) {
-    selectNextEffect();
+  const bool reading = digitalRead(PIN_ENCODER_SW);
+
+  if (reading != lastButtonReading) {
+    lastButtonChangeAt = millis();
+    lastButtonReading = reading;
   }
 
-  if (buttonWasPressed(
-        PIN_SEND_PRESET,
-        lastSendPresetReading,
-        sendPresetState,
-        lastSendPresetChangeAt
-      )) {
-    sendCurrentEffect();
+  if ((millis() - lastButtonChangeAt) >= 30 && reading != buttonState) {
+    buttonState = reading;
+    if (buttonState == LOW) {
+      Serial.println("Encoder pressed: selecting preset 1");
+      setEffect(0);
+    }
   }
 }
 
@@ -128,11 +138,17 @@ void setup()
   Serial.println();
   Serial.println("NUX MIDI footswitch starting");
   Serial.println("Board: ESP32 DevKit / ESP32-WROOM-32");
-  Serial.println("Buttons: PRESET UP=GPIO35, SEND PRESET=GPIO0");
+  Serial.println("Encoder: CLK=25, DT=26, SW=27");
 
-  // GPIO35 has no internal pull-up. Add an external 10 kOhm pull-up to 3.3 V.
-  pinMode(PIN_PRESET_UP, INPUT);
-  pinMode(PIN_SEND_PRESET, INPUT_PULLUP);
+  pinMode(PIN_ENCODER_CLK, INPUT_PULLUP);
+  pinMode(PIN_ENCODER_DT, INPUT_PULLUP);
+  pinMode(PIN_ENCODER_SW, INPUT_PULLUP);
+
+  previousEncoderState =
+    (digitalRead(PIN_ENCODER_CLK) << 1) | digitalRead(PIN_ENCODER_DT);
+
+  attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_CLK), handleEncoder, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(PIN_ENCODER_DT), handleEncoder, CHANGE);
 
   MIDI.begin(MIDI_CHANNEL_OMNI);
 
@@ -171,7 +187,6 @@ void setup()
 void loop()
 {
   if (!isConnected) {
-    readButtons();
     delay(5);
     return;
   }
@@ -184,6 +199,7 @@ void loop()
     printPreset();
   }
 
-  readButtons();
+  readEncoder();
+  readEncoderButton();
   delay(1);
 }
