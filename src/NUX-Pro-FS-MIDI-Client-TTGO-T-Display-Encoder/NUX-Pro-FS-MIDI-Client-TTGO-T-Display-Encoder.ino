@@ -250,11 +250,6 @@ void loop()
     return;
   }
 
-  if (millis() - lastBleStatusAt >= 5000) {
-    lastBleStatusAt = millis();
-    Serial.println("BLE: connected");
-  }
-
   if (requestInitialPreset) {
     // Let BLE-MIDI finish settling before asking the device for its state.
     delay(250);
