@@ -109,9 +109,58 @@ void showEffect()
   tft.drawNumber(currentEffect + 1, 120, 82, 6);
 }
 
+void requestCurrentPreset()
+{
+  // Mighty Plug Pro private SysEx request:
+  // F0 43 58 70 0C 02 F7
+  const byte request[] = {
+    0xF0, 0x43, 0x58, 0x70, 0x0C, 0x02, 0xF7
+  };
+
+  Serial.println("Requesting current preset from NUX");
+  MIDI.sendSysEx(sizeof(request), request, true);
+}
+
+void handleSystemExclusive(byte *data, unsigned size)
+{
+  Serial.print("SysEx RX (");
+  Serial.print(size);
+  Serial.print(" bytes): ");
+  for (unsigned i = 0; i < size; i++) {
+    if (data[i] < 0x10)
+      Serial.print('0');
+    Serial.print(data[i], HEX);
+    Serial.print(' ');
+  }
+  Serial.println();
+
+  // NUX response after the request above:
+  // F0 43 58 70 0C 03 <preset-index> 32 F7
+  // Some BLE-MIDI transport versions leave timestamp bytes before F0.
+  unsigned start = 0;
+  while (start < size && start < 4 && data[start] != 0xF0)
+    start++;
+
+  if (size >= start + 9 &&
+      data[start] == 0xF0 &&
+      data[start + 1] == 0x43 &&
+      data[start + 2] == 0x58 &&
+      data[start + 3] == 0x70 &&
+      data[start + 4] == 0x0C &&
+      data[start + 5] == 0x03 &&
+      data[start + 7] == 0x32 &&
+      data[start + 8] == 0xF7 &&
+      data[start + 6] < MAX_EFFECT_COUNT) {
+    currentEffect = data[start + 6];
+    Serial.print("Current preset received from NUX: ");
+    Serial.println(currentEffect + 1);
+    showEffect();
+  }
+}
+
 void sendCurrentEffect()
 {
-  // The MIGHTY PLUG PRO beta protocol uses CC 49 for preset switching.
+  // Mighty Plug Pro selects presets with MIDI Program Change, not CC 49.
   if (!isConnected) {
     Serial.println("Cannot send preset: BLE-MIDI is not connected");
     showEffect();
@@ -120,7 +169,7 @@ void sendCurrentEffect()
 
   Serial.print("Sending preset: ");
   Serial.println(currentEffect + 1);
-  MIDI.sendControlChange(49, currentEffect, 1);
+  MIDI.sendProgramChange(currentEffect, 1);
   showEffect();
 }
 
@@ -216,15 +265,16 @@ void setup()
     showStatus("SEARCHING...");
   });
 
-  // Synchronize the display when the NUX sends its current preset.
-  MIDI.setHandleControlChange([](byte channel, byte control, byte value) {
-    if (control == 49 && value < MAX_EFFECT_COUNT) {
-      currentEffect = value;
-      Serial.print("Preset received: ");
+  // Synchronize the display when the NUX sends a MIDI Program Change.
+  MIDI.setHandleProgramChange([](byte channel, byte program) {
+    if (program < MAX_EFFECT_COUNT) {
+      currentEffect = program;
+      Serial.print("Preset received from NUX: ");
       Serial.println(currentEffect + 1);
       showEffect();
     }
   });
+  MIDI.setHandleSystemExclusive(handleSystemExclusive);
 
   xTaskCreatePinnedToCore(
     midiReadTask,
@@ -253,9 +303,9 @@ void loop()
   if (requestInitialPreset) {
     // Let BLE-MIDI finish settling before asking the device for its state.
     delay(250);
-    MIDI.sendControlChange(49, 0, 1);
+    showStatus("SYNC...");
+    requestCurrentPreset();
     requestInitialPreset = false;
-    showEffect();
   }
 
   delay(1);

@@ -1,0 +1,1 @@
+- [NUX MIDI protocol](nux-mighty-plug-pro-midi.md) — Mighty Plug Pro uses Program Change for presets and private SysEx for current-preset retrieval.
