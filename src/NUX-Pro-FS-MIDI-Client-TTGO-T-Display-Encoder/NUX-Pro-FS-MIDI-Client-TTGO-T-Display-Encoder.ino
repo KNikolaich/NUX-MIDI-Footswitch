@@ -64,6 +64,7 @@ TFT_eSPI/User_Setup_Select.h
 // #define MIDI_DEVICE_NAME "MIGHTY PLUG PRO"
 #define MIDI_DEVICE_NAME "cb:4e:fd:a3:6c:1b"
 #define MAX_EFFECT_COUNT 7
+#define PRESET_SYNC_TIMEOUT_MS 2000UL
 
 #define PIN_PRESET_UP 35
 #define PIN_SEND_PRESET 0
@@ -73,6 +74,8 @@ BLEMIDI_CREATE_INSTANCE(MIDI_DEVICE_NAME, MIDI)
 
 bool isConnected = false;
 bool requestInitialPreset = false;
+bool waitingForInitialPreset = false;
+unsigned long presetSyncStartedAt = 0;
 byte currentEffect = 0;
 
 unsigned long lastBleStatusAt = 0;
@@ -152,6 +155,7 @@ void handleSystemExclusive(byte *data, unsigned size)
       data[start + 8] == 0xF7 &&
       data[start + 6] < MAX_EFFECT_COUNT) {
     currentEffect = data[start + 6];
+    waitingForInitialPreset = false;
     Serial.print("Current preset received from NUX: ");
     Serial.println(currentEffect + 1);
     showEffect();
@@ -254,6 +258,7 @@ void setup()
   BLEMIDI.setHandleConnected([]() {
     isConnected = true;
     requestInitialPreset = true;
+    waitingForInitialPreset = true;
     Serial.println("BLE-MIDI connected to MIGHTY PLUG PRO");
     showStatus("CONNECTED");
   });
@@ -261,6 +266,7 @@ void setup()
   BLEMIDI.setHandleDisconnected([]() {
     isConnected = false;
     requestInitialPreset = false;
+    waitingForInitialPreset = false;
     Serial.println("BLE-MIDI disconnected; scanning");
     showStatus("SEARCHING...");
   });
@@ -269,6 +275,7 @@ void setup()
   MIDI.setHandleProgramChange([](byte channel, byte program) {
     if (program < MAX_EFFECT_COUNT) {
       currentEffect = program;
+      waitingForInitialPreset = false;
       Serial.print("Preset received from NUX: ");
       Serial.println(currentEffect + 1);
       showEffect();
@@ -303,9 +310,25 @@ void loop()
   if (requestInitialPreset) {
     // Let BLE-MIDI finish settling before asking the device for its state.
     delay(250);
+    if (!isConnected) {
+      requestInitialPreset = false;
+      waitingForInitialPreset = false;
+      return;
+    }
+
     showStatus("SYNC...");
+    presetSyncStartedAt = millis();
     requestCurrentPreset();
     requestInitialPreset = false;
+  }
+
+  if (waitingForInitialPreset &&
+      millis() - presetSyncStartedAt >= PRESET_SYNC_TIMEOUT_MS) {
+    waitingForInitialPreset = false;
+    Serial.println(
+      "No current preset response; using local preset selection"
+    );
+    showEffect();
   }
 
   delay(1);
