@@ -12,15 +12,17 @@ double click. Preset commands are sent only while BLE-MIDI is connected.
 
 ## Assumed hardware
 
-This sketch assumes the common ESP32-C3 Mini board with:
+This sketch targets the ESP32-C3 Mini board variant with:
 
 - onboard BOOT button on GPIO9, active LOW;
 - onboard 0.42-inch SSD1306 OLED, 72×40 pixels;
 - I2C SDA on GPIO5, SCL on GPIO6;
 - I2C address `0x3C`.
+- screen offset X=28, Y=0; U8g2's `SSD1306_72X40_ER` driver includes this offset;
+- separate hardware RST button;
+- board indicator LEDs PWR on GPIO4 and USB on GPIO8 (unused by this sketch).
 
-Board variants may use a different OLED controller, address, or BOOT pin. Check
-the exact board documentation if the screen or button does not respond.
+If the exact board revision differs, check its pinout before uploading.
 
 Holding BOOT while powering on or resetting the ESP32-C3 enters its ROM
 download mode. Do not hold the button during normal startup.

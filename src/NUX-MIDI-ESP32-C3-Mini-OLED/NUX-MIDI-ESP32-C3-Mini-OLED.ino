@@ -1,9 +1,11 @@
 /**
  * Minimal BLE-MIDI preset footswitch for NUX MIGHTY PLUG PRO / MP-3.
  *
- * Assumed board: ESP32-C3 Mini with onboard 0.42" SSD1306 OLED (72x40).
- * OLED: SDA=GPIO5, SCL=GPIO6, I2C address=0x3C.
- * BOOT button: GPIO9, active LOW.
+ * Board: ESP32-C3 Mini with onboard 0.42" SSD1306 OLED (72x40).
+ * OLED: SDA=GPIO5, SCL=GPIO6, I2C address=0x3C, visible area offset X=28/Y=0.
+ * U8g2's SSD1306_72X40_ER driver already applies the X=28 controller offset.
+ * BOOT button: GPIO9, active LOW. RST is a separate hardware reset button.
+ * Board indicator LEDs: PWR=GPIO4 and USB=GPIO8; this sketch does not use them.
  *
  * Single click selects preset 1 (MIDI Program Change value 0).
  * Double click selects preset 3 (MIDI Program Change value 2).
