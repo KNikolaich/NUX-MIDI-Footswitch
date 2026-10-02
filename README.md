@@ -21,6 +21,8 @@ There are currently three variants of the code:
 
   To use the scanner, open the `.ino` file from that folder in Arduino IDE, select an ESP32 Dev Module, and upload it. The default AP is `NUX-Scanner` with password `nux12345`; the default HTTP login is `admin` with password `nux12345`. Connect a phone or laptop to the AP and open `http://192.168.4.1/`. Change the NUX BLE name/MAC and credentials on the Settings page; they are saved to NVS and applied after the automatic restart. Keep the NUX output volume low while testing unfamiliar CC values.
 
+- ESP32-C3 Mini with onboard 0.42-inch OLED: The standalone sketch in `src/NUX-MIDI-ESP32-C3-Mini-OLED` targets the common SSD1306 72×40 board variant. BOOT single-click selects MP-3 preset 1; double-click selects preset 3. Assumed pins are BOOT=GPIO9, OLED SDA=GPIO5, SCL=GPIO6, address `0x3C`. It sends MIDI Program Change only; confirm the exact board/OLED variant if its controller or pinout differs.
+
 The code in all variants is able to handle MIDI effect-switching-events sent from the NUX Mighty device to synchronize the selected effect between footswitch and NUX device. This ensures that the indicated effect of the footswitch and the NUX Mighty device are always in sync - even if you switch the selected effects at the NUX device.
 
 # Included libraries

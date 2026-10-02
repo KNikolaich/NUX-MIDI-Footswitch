@@ -45,7 +45,7 @@ bool buttonStableState = HIGH;
 unsigned long buttonRawChangedAt = 0;
 unsigned long lastClickAt = 0;
 uint8_t pendingClickCount = 0;
-uint8_t selectedPreset = 1;
+uint8_t selectedPreset = 0;
 bool presetDisplayPending = false;
 
 void drawScreen(const char *status)
@@ -57,13 +57,17 @@ void drawScreen(const char *status)
 
   display.setFont(u8g2_font_10x20_tf);
   char presetLabel[8];
-  snprintf(presetLabel, sizeof(presetLabel), "P%u", selectedPreset);
+  if (selectedPreset == 0) {
+    snprintf(presetLabel, sizeof(presetLabel), "P-");
+  } else {
+    snprintf(presetLabel, sizeof(presetLabel), "P%u", selectedPreset);
+  }
   const int16_t textWidth = display.getStrWidth(presetLabel);
-  display.drawStr((72 - textWidth) / 2, 34, presetLabel);
+  display.drawStr((72 - textWidth) / 2, 33, presetLabel);
 
-  display.setFont(u8g2_font_5x8_tf);
+  display.setFont(u8g2_font_4x6_tf);
   const int16_t statusWidth = display.getStrWidth(status);
-  display.drawStr((72 - statusWidth) / 2, 40, status);
+  display.drawStr((72 - statusWidth) / 2, 39, status);
   display.sendBuffer();
 }
 
@@ -128,8 +132,8 @@ void setup()
   pinMode(PIN_BOOT_BUTTON, INPUT_PULLUP);
   Wire.begin(OLED_SDA, OLED_SCL);
   display.setI2CAddress(OLED_ADDRESS << 1);
-  display.begin();
   display.setBusClock(400000);
+  display.begin();
   drawScreen("BLE SEARCH");
 
   Serial.println();
