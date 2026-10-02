@@ -62,7 +62,7 @@ bool deviceSettingsBegin(DeviceSettings &settings)
   settings.presetA = DEFAULT_PRESET_A;
   settings.presetB = DEFAULT_PRESET_B;
 
-  if (!preferences.begin(NVS_NAMESPACE, true))
+  if (!preferences.begin(NVS_NAMESPACE, false))
     return false;
 
   const String storedTarget =

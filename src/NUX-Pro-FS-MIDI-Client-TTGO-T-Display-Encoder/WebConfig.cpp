@@ -26,6 +26,18 @@ namespace
     return false;
   }
 
+  bool validTargetInput(const String &target)
+  {
+    if (target.length() == 0 || target.length() > 22)
+      return false;
+    for (size_t i = 0; i < target.length(); i++) {
+      const unsigned char ch = target[i];
+      if (ch < 0x20 || ch > 0x7e)
+        return false;
+    }
+    return true;
+  }
+
   String escapeHtml(const String &value)
   {
     String result;
@@ -114,7 +126,7 @@ namespace
     const long presetB = server.arg("presetB").toInt();
 
     if (presetA < 1 || presetA > 7 || presetB < 1 || presetB > 7 ||
-        target.length() == 0 || target.length() > 22) {
+        !validTargetInput(target)) {
       server.send(400, "text/plain",
                   "Invalid target or preset number; presets must be 1 to 7.");
       return;
@@ -167,6 +179,7 @@ namespace
     } else if (upload.status == UPLOAD_FILE_WRITE && updateStarted) {
       if (Update.write(upload.buf, upload.currentSize) != upload.currentSize) {
         updateStarted = false;
+        Update.abort();
         Serial.println("OTA write failed.");
         Update.printError(Serial);
       }

@@ -2,13 +2,13 @@
  * BLE-MIDI footswitch for NUX MIGHTY PLUG PRO.
  *
  * Target board: TTGO T-Display ESP32 (ST7789 135x240 TFT).
- * Controls: the built-in GPIO35 and GPIO0 buttons recall two quick presets.
+ * Controls: the built-in GPIO35 and GPIO0 buttons recall configurable presets.
  * A rotary encoder selects any preset and its push button sends the selection.
  * The built-in TFT displays BLE status and the selected preset.
  *
  * Built-in button wiring on TTGO T-Display V1.1:
- *   QUICK PRESET 1 -> GPIO35
- *   QUICK PRESET 2 -> GPIO0
+ *   QUICK PRESET A -> GPIO35 (default preset 1)
+ *   QUICK PRESET B -> GPIO0 (default preset 3)
  *   BATTERY ADC -> GPIO34 (measurement divider enabled by GPIO14)
  *
  * External encoder wiring:
@@ -32,6 +32,7 @@
  * - Arduino BLE-MIDI by lathoub
  * - MIDI Library by FortySevenEffects
  * - TFT_eSPI by Bodmer
+ * - ESP32 Arduino core WiFi, WebServer, Preferences, and Update libraries
  *
  * TFT_eSPI setup:
  * Select the TTGO T-Display setup in TFT_eSPI/User_Setup_Select.h.
@@ -42,15 +43,17 @@
 
 подключается к MIGHTY PLUG PRO по BLE-MIDI;
 использует встроенный цветной ST7789-дисплей TTGO T-Display;
-кнопками GPIO35 и GPIO0 мгновенно выбирает preset 1 и preset 5;
+кнопками GPIO35 и GPIO0 мгновенно выбирает два настраиваемых preset;
 encoder выбирает любой из 7 presets по кругу;
 кнопка encoder отправляет выбранный preset в NUX;
 синхронизирует номер preset, если он изменён непосредственно на MIGHTY PLUG PRO;
+предоставляет защищённую WiFi-страницу для настройки быстрых preset и BLE target;
+позволяет загрузить новую прошивку через OTA;
 оставляет UART для Serial Monitor на скорости 115200.
 Кнопки уже установлены на плате TTGO T-Display V1.1:
 
-QUICK PRESET 1 > GPIO35
-QUICK PRESET 2 > GPIO0
+QUICK PRESET A > GPIO35 (по умолчанию preset 1)
+QUICK PRESET B > GPIO0 (по умолчанию preset 3)
 
 Encoder:
 CLK > GPIO25
@@ -79,12 +82,10 @@ TFT_eSPI/User_Setup_Select.h
 #include <BLEMIDI_Transport.h>
 #include <hardware/BLEMIDI_Client_ESP32.h>
 #include <TFT_eSPI.h>
+#include "DeviceSettings.h"
+#include "WebConfig.h"
 
-//#define MIDI_DEVICE_NAME "MIGHTY PLUG PRO"
-#define MIDI_DEVICE_NAME "cb:4e:fd:a3:6c:1b"
 #define MAX_EFFECT_COUNT 7
-#define QUICK_PRESET_A 1
-#define QUICK_PRESET_B 3
 #define PRESET_SYNC_TIMEOUT_MS 2000UL
 #define BATTERY_REFRESH_INTERVAL_MS 5000UL
 #define PIN_BATTERY_ADC 34
@@ -100,7 +101,11 @@ TFT_eSPI/User_Setup_Select.h
 #define PIN_ENCODER_SW 27
 
 TFT_eSPI tft = TFT_eSPI();
-BLEMIDI_CREATE_INSTANCE(MIDI_DEVICE_NAME, MIDI)
+DeviceSettings deviceSettings;
+uint8_t quickPresetA = 1;
+uint8_t quickPresetB = 3;
+String configuredMidiTarget = deviceSettingsLoadBleTargetEarly();
+BLEMIDI_CREATE_INSTANCE(configuredMidiTarget.c_str(), MIDI)
 
 volatile int8_t encoderMovement = 0;
 volatile uint8_t previousEncoderState = 0;
@@ -194,8 +199,8 @@ void drawScreen()
 
   tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
   tft.drawString(screenStatus, 4, 20, 1);
-  tft.drawString("GPIO35 -> P1", 4, 35, 1);
-  tft.drawString("GPIO0  -> P5", 4, 46, 1);
+  tft.drawString(String("GPIO35 -> P") + quickPresetA, 4, 35, 1);
+  tft.drawString(String("GPIO0  -> P") + quickPresetB, 4, 46, 1);
   tft.drawString("ENC SW -> SEND", 4, 57, 1);
   drawBattery();
 
@@ -387,7 +392,7 @@ void readQuickPresetButtons()
         quickPresetAState,
         lastQuickPresetAChangeAt
       )) {
-    sendPresetNumber(QUICK_PRESET_A);
+    sendPresetNumber(quickPresetA);
   }
 
   if (buttonWasPressed(
@@ -396,7 +401,7 @@ void readQuickPresetButtons()
         quickPresetBState,
         lastQuickPresetBChangeAt
       )) {
-    sendPresetNumber(QUICK_PRESET_B);
+    sendPresetNumber(quickPresetB);
   }
 }
 
@@ -426,7 +431,18 @@ void setup()
   Serial.begin(115200);
   Serial.println();
   Serial.println("NUX MIDI footswitch starting");
-  Serial.println("Quick presets: GPIO35=P1, GPIO0=P5");
+
+  if (!deviceSettingsBegin(deviceSettings)) {
+    Serial.println("NVS unavailable; defaults active and changes may not persist.");
+  }
+  quickPresetA = deviceSettings.presetA;
+  quickPresetB = deviceSettings.presetB;
+  Serial.print("BLE target: ");
+  Serial.println(configuredMidiTarget);
+  Serial.print("Quick presets: GPIO35=P");
+  Serial.print(quickPresetA);
+  Serial.print(", GPIO0=P");
+  Serial.println(quickPresetB);
   Serial.println("Encoder: CLK=25, DT=26, SW=27");
 
   // GPIO35 has no internal pull-up. The TTGO button circuit normally
@@ -444,7 +460,8 @@ void setup()
     digitalPinToInterrupt(PIN_ENCODER_CLK),
     handleEncoder,
     CHANGE
-  );
+);
+
   attachInterrupt(
     digitalPinToInterrupt(PIN_ENCODER_DT),
     handleEncoder,
@@ -462,6 +479,7 @@ void setup()
   readBattery();
   lastBatteryReadAt = millis();
   showStatus("SEARCHING...");
+  webConfigBegin(deviceSettings);
 
   MIDI.begin(MIDI_CHANNEL_OMNI);
 
@@ -506,6 +524,12 @@ void setup()
 
 void loop()
 {
+  webConfigHandleClient();
+  if (webConfigRestartRequested()) {
+    delay(150);
+    ESP.restart();
+  }
+
   readQuickPresetButtons();
   readEncoder();
   readEncoderButton();
