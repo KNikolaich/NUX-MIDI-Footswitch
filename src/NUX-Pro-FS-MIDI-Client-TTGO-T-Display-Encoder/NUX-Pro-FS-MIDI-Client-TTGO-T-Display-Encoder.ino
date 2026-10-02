@@ -80,11 +80,11 @@ TFT_eSPI/User_Setup_Select.h
 #include <hardware/BLEMIDI_Client_ESP32.h>
 #include <TFT_eSPI.h>
 
-// #define MIDI_DEVICE_NAME "MIGHTY PLUG PRO"
+//#define MIDI_DEVICE_NAME "MIGHTY PLUG PRO"
 #define MIDI_DEVICE_NAME "cb:4e:fd:a3:6c:1b"
 #define MAX_EFFECT_COUNT 7
 #define QUICK_PRESET_A 1
-#define QUICK_PRESET_B 5
+#define QUICK_PRESET_B 3
 #define PRESET_SYNC_TIMEOUT_MS 2000UL
 #define BATTERY_REFRESH_INTERVAL_MS 5000UL
 #define PIN_BATTERY_ADC 34
