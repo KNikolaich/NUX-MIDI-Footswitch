@@ -173,42 +173,42 @@ namespace
     display.print('%');
   }
 
-  void renderPartial(uint8_t currentPreset, bool bleConnected, bool portalActive)
+  void drawCompleteScreen(
+    const DeviceSettings &settings,
+    uint8_t currentPreset,
+    bool bleConnected,
+    bool portalActive,
+    const BatteryReading &battery)
   {
-    constexpr int16_t BLE_X = 56;
-    constexpr int16_t BLE_Y = 43;
-    constexpr int16_t BLE_W = 88;
-    constexpr int16_t BLE_H = 17;
-    display.setPartialWindow(BLE_X, BLE_Y, BLE_W, BLE_H);
-    display.firstPage();
-    do {
-      display.fillRect(BLE_X, BLE_Y, BLE_W, BLE_H, GxEPD_WHITE);
-      drawBleStatus(bleConnected);
-    } while (display.nextPage());
+    display.fillScreen(GxEPD_WHITE);
+
+    drawHeader(portalActive ? "NUX SETUP / OTA ACTIVE" : "NUX MIDI / WATCHY V2.0");
+
+    display.setTextColor(GxEPD_BLACK);
+    drawPresetLabel(4, 29, "P2", settings.presets[1]);
+    drawPresetLabel(160, 29, "P3", settings.presets[2]);
+    drawPresetLabel(4, 151, "P1", settings.presets[0]);
+    drawPresetLabel(160, 151, "P4", settings.presets[3]);
+
+    drawBleStatus(bleConnected);
+    drawCurrentPreset(currentPreset, portalActive);
 
     if (portalActive) {
-      constexpr int16_t PRESET_X = 76;
-      constexpr int16_t PRESET_Y = 64;
-      constexpr int16_t PRESET_W = 48;
-      constexpr int16_t PRESET_H = 32;
-      display.setPartialWindow(PRESET_X, PRESET_Y, PRESET_W, PRESET_H);
-      display.firstPage();
-      do {
-        display.fillRect(PRESET_X, PRESET_Y, PRESET_W, PRESET_H, GxEPD_WHITE);
-        drawCurrentPreset(currentPreset, true);
-      } while (display.nextPage());
-    } else {
-      constexpr int16_t PRESET_X = 64;
-      constexpr int16_t PRESET_Y = 106;
-      constexpr int16_t PRESET_W = 72;
-      constexpr int16_t PRESET_H = 52;
-      display.setPartialWindow(PRESET_X, PRESET_Y, PRESET_W, PRESET_H);
-      display.firstPage();
-      do {
-        display.fillRect(PRESET_X, PRESET_Y, PRESET_W, PRESET_H, GxEPD_WHITE);
-        drawCurrentPreset(currentPreset, false);
-      } while (display.nextPage());
+      display.setTextSize(1);
+      display.setCursor(5, 101);
+      display.print("SSID: ");
+      display.print(WatchyConfig::AP_SSID);
+      display.setCursor(5, 117);
+      display.print("PASS: ");
+      display.print(WatchyConfig::AP_PASSWORD);
+      display.setCursor(5, 133);
+      display.print("IP: 192.168.4.1");
     }
+
+    display.setTextSize(1);
+    display.setCursor(5, 191);
+    display.print(portalActive ? "WEB ON: BACK OFF" : "Hold BACK: setup");
+    drawBatteryStatus(battery);
   }
 }
 
@@ -242,48 +242,24 @@ void WatchyScreen::render(
   if (currentPreset < 1 || currentPreset > WatchyConfig::PRESET_COUNT)
     currentPreset = 1;
 
-  if (!fullRefresh) {
-    renderPartial(currentPreset, bleConnected, portalActive);
-    display.powerOff();
-    return;
-  }
-
   const BatteryReading battery = readBattery();
-  display.setFullWindow();
+  if (fullRefresh)
+    display.setFullWindow();
+  else
+    display.setPartialWindow(0, 0, DISPLAY_WIDTH, GxEPD2_154_D67::HEIGHT);
 
   display.firstPage();
   do {
-    display.fillScreen(GxEPD_WHITE);
-
-    drawHeader(portalActive ? "NUX SETUP / OTA ACTIVE" : "NUX MIDI / WATCHY V2.0");
-
-    display.setTextColor(GxEPD_BLACK);
-    drawPresetLabel(4, 29, "P2", settings.presets[1]);
-    drawPresetLabel(160, 29, "P3", settings.presets[2]);
-    drawPresetLabel(4, 151, "P1", settings.presets[0]);
-    drawPresetLabel(160, 151, "P4", settings.presets[3]);
-
-    drawBleStatus(bleConnected);
-
-    drawCurrentPreset(currentPreset, portalActive);
-
-    if (portalActive) {
-      display.setCursor(5, 101);
-      display.print("SSID: ");
-      display.print(WatchyConfig::AP_SSID);
-      display.setCursor(5, 117);
-      display.print("PASS: ");
-      display.print(WatchyConfig::AP_PASSWORD);
-      display.setCursor(5, 133);
-      display.print("IP: 192.168.4.1");
-    }
-
-    display.setCursor(5, 191);
-    display.print(portalActive ? "WEB ON: BACK OFF" : "Hold BACK: setup");
-    drawBatteryStatus(battery);
+    drawCompleteScreen(
+      settings,
+      currentPreset,
+      bleConnected,
+      portalActive,
+      battery
+    );
   } while (display.nextPage());
 
-  // The e-paper retains its image without power. Shut down panel drive
-  // voltages after the full-screen refresh.
+  // The full frame was redrawn above. A partial waveform updates the entire
+  // panel for ordinary changes; only the scheduled/AP path uses full refresh.
   display.powerOff();
 }
