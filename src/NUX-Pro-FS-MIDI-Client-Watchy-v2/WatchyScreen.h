@@ -15,5 +15,4 @@ public:
 
 private:
   bool _ready = false;
-  uint8_t _renderCount = 0;
 };

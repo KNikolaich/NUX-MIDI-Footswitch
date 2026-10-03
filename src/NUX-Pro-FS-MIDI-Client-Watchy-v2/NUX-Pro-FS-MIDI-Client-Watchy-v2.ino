@@ -30,6 +30,7 @@ namespace
 
   bool presetRequestPending = false;
   uint32_t presetRequestAt = 0;
+  uint32_t lastScreenRefreshAt = 0;
 
   void showCurrentState()
   {
@@ -40,6 +41,7 @@ namespace
       midiClient.connected(),
       webConfig.portalActive()
     );
+    lastScreenRefreshAt = millis();
   }
 
   void recallButtonPreset(uint8_t buttonIndex, const char *buttonName)
@@ -120,6 +122,7 @@ void setup()
   if (!screen.begin())
     Serial.println("[DISPLAY] E-paper initialization failed.");
   screen.render(settings, 1, false, false);
+  lastScreenRefreshAt = millis();
 
   webConfig.begin(settingsStore);
   if (!midiClient.begin())
@@ -163,6 +166,9 @@ void loop()
     Serial.printf("[MIDI] NUX reports preset %u\n", receivedPreset);
     showCurrentState();
   }
+
+  if (millis() - lastScreenRefreshAt >= WatchyConfig::BATTERY_DISPLAY_REFRESH_MS)
+    showCurrentState();
 
   delay(2);
 }

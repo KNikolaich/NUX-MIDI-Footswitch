@@ -20,6 +20,8 @@ namespace WatchyConfig
   constexpr int8_t DISPLAY_MISO_PIN = -1;
   constexpr uint8_t DISPLAY_MOSI_PIN = 23;
   constexpr uint8_t DISPLAY_SCK_PIN = 18;
+  // Watchy v2.0 routes the LiPo monitor through a 1:2 voltage divider to GPIO34.
+  constexpr uint8_t BATTERY_ADC_PIN = 34;
 
   constexpr uint8_t I2C_SDA_PIN = 21;
   constexpr uint8_t I2C_SCL_PIN = 22;
@@ -31,7 +33,7 @@ namespace WatchyConfig
   constexpr uint32_t BUTTON_DEBOUNCE_MS = 35;
   constexpr uint32_t PORTAL_HOLD_MS = 1600;
   constexpr uint32_t PORTAL_IDLE_TIMEOUT_MS = 180000;
-  constexpr uint32_t FULL_DISPLAY_REFRESH_EVERY = 20;
+  constexpr uint32_t BATTERY_DISPLAY_REFRESH_MS = 300000;
 
   constexpr char DEFAULT_BLE_TARGET[] = "cb:4e:fd:a3:6c:1b";
   constexpr char AP_SSID[] = "NUX-Watchy-Setup";
