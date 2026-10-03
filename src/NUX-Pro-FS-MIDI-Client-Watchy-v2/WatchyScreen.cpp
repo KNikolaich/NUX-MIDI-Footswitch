@@ -16,6 +16,9 @@ namespace
     )
   );
 
+  constexpr int16_t DISPLAY_WIDTH = 200;
+  constexpr int16_t HEADER_HEIGHT = 35;
+
   struct BatteryReading
   {
     float voltage;
@@ -84,9 +87,8 @@ namespace
     };
   }
 
-  void drawPresetButton(int16_t x, int16_t y, const char *label, uint8_t preset)
+  void drawPresetLabel(int16_t x, int16_t y, const char *label, uint8_t preset)
   {
-    display.drawRect(x, y, 36, 32, GxEPD_BLACK);
     display.setTextSize(1);
     display.setTextColor(GxEPD_BLACK);
     display.setCursor(x + 4, y + 11);
@@ -96,11 +98,69 @@ namespace
     display.print(preset);
   }
 
+  void drawHeader(const char *text)
+  {
+    // Scale the built-in 5x7 font to about 1.5x vertically and 1.4x
+    // horizontally so the full title still fits on the 200px display.
+    GFXcanvas1 textCanvas(DISPLAY_WIDTH, 8);
+    textCanvas.fillScreen(0);
+    textCanvas.setTextSize(1);
+    textCanvas.setTextColor(1);
+    textCanvas.setCursor(0, 0);
+    textCanvas.print(text);
+
+    int16_t sourceWidth = 0;
+    for (const char *character = text; *character; ++character)
+      sourceWidth += 6;
+    const int16_t scaledWidth = (sourceWidth * 7 + 4) / 5;
+    constexpr int16_t scaledHeight = 12;
+    const int16_t originX = (DISPLAY_WIDTH - scaledWidth) / 2;
+    const int16_t originY = (HEADER_HEIGHT - scaledHeight) / 2;
+
+    display.fillRect(0, 0, DISPLAY_WIDTH, HEADER_HEIGHT, GxEPD_BLACK);
+    for (int16_t y = 0; y < 8; ++y) {
+      const int16_t y0 = originY + (y * 3) / 2;
+      const int16_t y1 = originY + ((y + 1) * 3) / 2;
+      for (int16_t x = 0; x < sourceWidth; ++x) {
+        if (!textCanvas.getPixel(x, y))
+          continue;
+        const int16_t x0 = originX + (x * 7) / 5;
+        const int16_t x1 = originX + ((x + 1) * 7) / 5;
+        display.fillRect(x0, y0, x1 - x0, y1 - y0, GxEPD_WHITE);
+      }
+    }
+  }
+
+  void drawBleStatus(bool bleConnected)
+  {
+    display.setFont(nullptr);
+    display.setTextSize(1);
+    display.setTextColor(GxEPD_BLACK);
+    display.setCursor(59, 49);
+    display.print(bleConnected ? "BLE CONNECTED" : "BLE SEARCH");
+  }
+
+  void drawCurrentPreset(uint8_t currentPreset, bool portalActive)
+  {
+    display.setFont(nullptr);
+    display.setTextColor(GxEPD_BLACK);
+    if (portalActive) {
+      display.setTextSize(3);
+      display.setCursor(82, 68);
+    } else {
+      display.setTextSize(5);
+      display.setCursor(70, 111);
+    }
+    display.print('P');
+    display.print(currentPreset);
+    display.setTextSize(1);
+  }
+
   void drawBatteryStatus(const BatteryReading &battery)
   {
     display.setTextSize(1);
     display.setTextColor(GxEPD_BLACK);
-    display.setCursor(104, 195);
+    display.setCursor(104, 191);
     if (!battery.valid) {
       display.print("BAT --.-V --%");
       return;
@@ -111,6 +171,44 @@ namespace
     display.print("V ~");
     display.print(battery.percent);
     display.print('%');
+  }
+
+  void renderPartial(uint8_t currentPreset, bool bleConnected, bool portalActive)
+  {
+    constexpr int16_t BLE_X = 56;
+    constexpr int16_t BLE_Y = 43;
+    constexpr int16_t BLE_W = 88;
+    constexpr int16_t BLE_H = 17;
+    display.setPartialWindow(BLE_X, BLE_Y, BLE_W, BLE_H);
+    display.firstPage();
+    do {
+      display.fillRect(BLE_X, BLE_Y, BLE_W, BLE_H, GxEPD_WHITE);
+      drawBleStatus(bleConnected);
+    } while (display.nextPage());
+
+    if (portalActive) {
+      constexpr int16_t PRESET_X = 76;
+      constexpr int16_t PRESET_Y = 64;
+      constexpr int16_t PRESET_W = 48;
+      constexpr int16_t PRESET_H = 32;
+      display.setPartialWindow(PRESET_X, PRESET_Y, PRESET_W, PRESET_H);
+      display.firstPage();
+      do {
+        display.fillRect(PRESET_X, PRESET_Y, PRESET_W, PRESET_H, GxEPD_WHITE);
+        drawCurrentPreset(currentPreset, true);
+      } while (display.nextPage());
+    } else {
+      constexpr int16_t PRESET_X = 64;
+      constexpr int16_t PRESET_Y = 106;
+      constexpr int16_t PRESET_W = 72;
+      constexpr int16_t PRESET_H = 52;
+      display.setPartialWindow(PRESET_X, PRESET_Y, PRESET_W, PRESET_H);
+      display.firstPage();
+      do {
+        display.fillRect(PRESET_X, PRESET_Y, PRESET_W, PRESET_H, GxEPD_WHITE);
+        drawCurrentPreset(currentPreset, false);
+      } while (display.nextPage());
+    }
   }
 }
 
@@ -135,13 +233,20 @@ void WatchyScreen::render(
   const DeviceSettings &settings,
   uint8_t currentPreset,
   bool bleConnected,
-  bool portalActive)
+  bool portalActive,
+  bool fullRefresh)
 {
   if (!_ready)
     return;
 
   if (currentPreset < 1 || currentPreset > WatchyConfig::PRESET_COUNT)
     currentPreset = 1;
+
+  if (!fullRefresh) {
+    renderPartial(currentPreset, bleConnected, portalActive);
+    display.powerOff();
+    return;
+  }
 
   const BatteryReading battery = readBattery();
   display.setFullWindow();
@@ -150,28 +255,17 @@ void WatchyScreen::render(
   do {
     display.fillScreen(GxEPD_WHITE);
 
-    display.fillRect(0, 0, 200, 23, GxEPD_BLACK);
-    display.setFont(nullptr);
-    display.setTextSize(1);
-    display.setTextColor(GxEPD_WHITE);
-    display.setCursor(8, 16);
-    display.print(portalActive ? "NUX SETUP / OTA ACTIVE" : "NUX MIDI / WATCHY V2.0");
+    drawHeader(portalActive ? "NUX SETUP / OTA ACTIVE" : "NUX MIDI / WATCHY V2.0");
 
     display.setTextColor(GxEPD_BLACK);
-    drawPresetButton(4, 29, "P2", settings.presets[1]);
-    drawPresetButton(160, 29, "P3", settings.presets[2]);
-    drawPresetButton(4, 151, "P1", settings.presets[0]);
-    drawPresetButton(160, 151, "P4", settings.presets[3]);
+    drawPresetLabel(4, 29, "P2", settings.presets[1]);
+    drawPresetLabel(160, 29, "P3", settings.presets[2]);
+    drawPresetLabel(4, 151, "P1", settings.presets[0]);
+    drawPresetLabel(160, 151, "P4", settings.presets[3]);
 
-    display.setCursor(59, 49);
-    display.print(bleConnected ? "BLE CONNECTED" : "BLE SEARCH");
+    drawBleStatus(bleConnected);
 
-    display.setTextColor(GxEPD_BLACK);
-    display.setTextSize(portalActive ? 3 : 5);
-    display.setCursor(portalActive ? 82 : 70, portalActive ? 82 : 111);
-    display.print('P');
-    display.print(currentPreset);
-    display.setTextSize(1);
+    drawCurrentPreset(currentPreset, portalActive);
 
     if (portalActive) {
       display.setCursor(5, 101);
@@ -184,7 +278,7 @@ void WatchyScreen::render(
       display.print("IP: 192.168.4.1");
     }
 
-    display.setCursor(5, 195);
+    display.setCursor(5, 191);
     display.print(portalActive ? "WEB ON: BACK OFF" : "Hold BACK: setup");
     drawBatteryStatus(battery);
   } while (display.nextPage());

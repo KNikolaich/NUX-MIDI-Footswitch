@@ -30,18 +30,20 @@ namespace
 
   bool presetRequestPending = false;
   uint32_t presetRequestAt = 0;
-  uint32_t lastScreenRefreshAt = 0;
+  uint32_t lastFullRefreshAt = 0;
 
-  void showCurrentState()
+  void showCurrentState(bool fullRefresh = false)
   {
     const DeviceSettings &settings = settingsStore.get();
     screen.render(
       settings,
       midiClient.currentPreset(),
       midiClient.connected(),
-      webConfig.portalActive()
+      webConfig.portalActive(),
+      fullRefresh
     );
-    lastScreenRefreshAt = millis();
+    if (fullRefresh)
+      lastFullRefreshAt = millis();
   }
 
   void recallButtonPreset(uint8_t buttonIndex, const char *buttonName)
@@ -87,7 +89,9 @@ namespace
         break;
       case ButtonEvent::PortalToggle:
         webConfig.togglePortal();
-        showCurrentState();
+        // Switching the AP screen changes several static fields and must clear
+        // the previous contents completely.
+        showCurrentState(true);
         break;
       case ButtonEvent::None:
       default:
@@ -121,8 +125,8 @@ void setup()
   buttons.begin();
   if (!screen.begin())
     Serial.println("[DISPLAY] E-paper initialization failed.");
-  screen.render(settings, 1, false, false);
-  lastScreenRefreshAt = millis();
+  screen.render(settings, 1, false, false, true);
+  lastFullRefreshAt = millis();
 
   webConfig.begin(settingsStore);
   if (!midiClient.begin())
@@ -135,7 +139,7 @@ void loop()
   const bool portalWasActive = webConfig.portalActive();
   webConfig.loop();
   if (portalWasActive != webConfig.portalActive())
-    showCurrentState();
+    showCurrentState(true);
 
   if (webConfig.restartRequested()) {
     delay(150);
@@ -167,8 +171,8 @@ void loop()
     showCurrentState();
   }
 
-  if (millis() - lastScreenRefreshAt >= WatchyConfig::BATTERY_DISPLAY_REFRESH_MS)
-    showCurrentState();
+  if (millis() - lastFullRefreshAt >= WatchyConfig::BATTERY_DISPLAY_REFRESH_MS)
+    showCurrentState(true);
 
   delay(2);
 }

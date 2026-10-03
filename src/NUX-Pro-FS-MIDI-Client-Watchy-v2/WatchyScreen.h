@@ -11,7 +11,8 @@ public:
   void render(const DeviceSettings &settings,
               uint8_t currentPreset,
               bool bleConnected,
-              bool portalActive);
+              bool portalActive,
+              bool fullRefresh);
 
 private:
   bool _ready = false;
