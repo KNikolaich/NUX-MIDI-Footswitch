@@ -1,0 +1,168 @@
+/*
+ * NUX MIGHTY PLUG PRO BLE-MIDI footswitch on Watchy v2.0.
+ *
+ * Four physical buttons recall four independently configured presets.
+ * A short press of BACK recalls its preset; holding BACK for 1.6 s toggles
+ * the protected settings/OTA access point.
+ *
+ * Watchy v2.0 button inputs are active HIGH and use the board's external
+ * pull-downs. The e-paper panel is driven directly through GxEPD2; the
+ * Watchy framework is intentionally not initialized because its init()
+ * starts RTC/accelerometer/watch-face features and enters deep sleep.
+ */
+
+#include <Arduino.h>
+
+#include "ButtonController.h"
+#include "DeviceSettings.h"
+#include "MidiClient.h"
+#include "WatchyConfig.h"
+#include "WatchyScreen.h"
+#include "WebConfig.h"
+
+namespace
+{
+  DeviceSettingsStore settingsStore;
+  ButtonController buttons;
+  NuxMidiClient midiClient;
+  WatchyScreen screen;
+  WebConfig webConfig;
+
+  bool presetRequestPending = false;
+  uint32_t presetRequestAt = 0;
+
+  void showCurrentState()
+  {
+    const DeviceSettings &settings = settingsStore.get();
+    screen.render(
+      settings,
+      midiClient.currentPreset(),
+      midiClient.connected(),
+      webConfig.portalActive()
+    );
+  }
+
+  void recallButtonPreset(uint8_t buttonIndex, const char *buttonName)
+  {
+    const DeviceSettings &settings = settingsStore.get();
+    const uint8_t preset = settings.presets[buttonIndex];
+    Serial.printf("[BUTTON] %s -> preset %u\n", buttonName, preset);
+    midiClient.sendPreset(preset);
+    showCurrentState();
+  }
+
+  void printStartupGuide()
+  {
+    Serial.println();
+    Serial.println("==============================================");
+    Serial.println(" NUX MIDI FOOTSWITCH - WATCHY v2.0");
+    Serial.println(" ESP32-PICO-D4 | 1.54in 200x200 e-paper");
+    Serial.println(" Target: NUX MIGHTY PLUG PRO via BLE-MIDI");
+    Serial.println("==============================================");
+    Serial.println("Short press a button to send its preset:");
+    Serial.println(" MENU GPIO26, BACK GPIO25, UP GPIO35, DOWN GPIO4");
+    Serial.println("Hold BACK for 1.6 s to open/close settings and OTA.");
+    Serial.println("BLE stays active; WiFi AP is off except in setup mode.");
+    Serial.println("RTC, accelerometer, time sync and vibration are unused.");
+    Serial.println("Serial Monitor: 115200 baud");
+    Serial.println("==============================================");
+  }
+
+  void handleButtonEvent(ButtonEvent event)
+  {
+    switch (event) {
+      case ButtonEvent::Menu:
+        recallButtonPreset(0, "MENU / GPIO26");
+        break;
+      case ButtonEvent::Back:
+        recallButtonPreset(1, "BACK / GPIO25");
+        break;
+      case ButtonEvent::Up:
+        recallButtonPreset(2, "UP / GPIO35");
+        break;
+      case ButtonEvent::Down:
+        recallButtonPreset(3, "DOWN / GPIO4");
+        break;
+      case ButtonEvent::PortalToggle:
+        webConfig.togglePortal();
+        showCurrentState();
+        break;
+      case ButtonEvent::None:
+      default:
+        break;
+    }
+  }
+}
+
+void setup()
+{
+  Serial.begin(115200);
+  delay(200);
+  printStartupGuide();
+
+  if (!settingsStore.begin())
+    Serial.println("[NVS] Could not read settings; defaults are active.");
+
+  const DeviceSettings &settings = settingsStore.get();
+  Serial.printf("[BOOT] BLE target: %s\n", settings.bleTarget.c_str());
+  Serial.printf("[BOOT] Presets MENU/BACK/UP/DOWN: %u/%u/%u/%u\n",
+    settings.presets[0],
+    settings.presets[1],
+    settings.presets[2],
+    settings.presets[3]);
+
+  // Keep the vibration motor transistor disabled. RTC and BMA423 are not
+  // initialized; their hardware remains on the board's always-on 3.3 V rail.
+  digitalWrite(WatchyConfig::VIBRATION_MOTOR_PIN, LOW);
+  pinMode(WatchyConfig::VIBRATION_MOTOR_PIN, OUTPUT);
+
+  buttons.begin();
+  if (!screen.begin())
+    Serial.println("[DISPLAY] E-paper initialization failed.");
+  screen.render(settings, 1, false, false);
+
+  webConfig.begin(settingsStore);
+  if (!midiClient.begin())
+    Serial.println("[BLE] MIDI task did not start; check available memory.");
+  Serial.println("[BOOT] Ready. Waiting for button presses and BLE connection.");
+}
+
+void loop()
+{
+  const bool portalWasActive = webConfig.portalActive();
+  webConfig.loop();
+  if (portalWasActive != webConfig.portalActive())
+    showCurrentState();
+
+  if (webConfig.restartRequested()) {
+    delay(150);
+    ESP.restart();
+  }
+
+  handleButtonEvent(buttons.poll());
+
+  bool connected = false;
+  if (midiClient.consumeConnectionChange(connected)) {
+    showCurrentState();
+    if (connected) {
+      presetRequestPending = true;
+      presetRequestAt = millis() + 250;
+    } else {
+      presetRequestPending = false;
+    }
+  }
+
+  if (presetRequestPending &&
+      (int32_t)(millis() - presetRequestAt) >= 0) {
+    midiClient.requestCurrentPreset();
+    presetRequestPending = false;
+  }
+
+  uint8_t receivedPreset = 0;
+  if (midiClient.consumePresetChange(receivedPreset)) {
+    Serial.printf("[MIDI] NUX reports preset %u\n", receivedPreset);
+    showCurrentState();
+  }
+
+  delay(2);
+}
