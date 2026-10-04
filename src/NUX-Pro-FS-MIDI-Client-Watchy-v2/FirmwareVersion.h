@@ -2,5 +2,5 @@
 
 namespace FirmwareVersion
 {
-  constexpr char STRING[] = "0.1.0";
+  constexpr char STRING[] = "0.2.0";
 }

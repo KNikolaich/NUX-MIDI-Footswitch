@@ -34,19 +34,25 @@ namespace
   bool presetRequestPending = false;
   uint32_t presetRequestAt = 0;
   uint32_t lastFullRefreshAt = 0;
+  uint8_t lastRenderedPreset = 0;
 
   void showCurrentState(bool fullRefresh = false)
   {
     const DeviceSettings &settings = settingsStore.get();
+    const uint8_t currentPreset = midiClient.currentPreset();
+    // The fast partial waveform leaves visible ghosting on changing preset
+    // digits. Use a clean full waveform whenever the displayed preset changes.
+    fullRefresh = fullRefresh || currentPreset != lastRenderedPreset;
     screen.render(
       settings,
-      midiClient.currentPreset(),
+      currentPreset,
       midiClient.connected(),
       webConfig.portalActive(),
       fullRefresh
     );
     if (fullRefresh)
       lastFullRefreshAt = millis();
+    lastRenderedPreset = currentPreset;
   }
 
   void recallButtonPreset(uint8_t buttonIndex, const char *buttonName)
@@ -82,7 +88,7 @@ namespace
     Serial.printf("[BUTTON] %s double tap -> preset %u\n",
       buttonName, presets[buttonIndex]);
     midiClient.sendPreset(presets[buttonIndex]);
-    showCurrentState();
+    showCurrentState(true);
   }
 
   void handleDoubleTap(uint8_t buttonIndex, const char *buttonName)
@@ -244,6 +250,7 @@ void setup()
   if (!screen.begin())
     Serial.println("[DISPLAY] E-paper initialization failed.");
   screen.render(settings, 1, false, false, true);
+  lastRenderedPreset = 1;
   lastFullRefreshAt = millis();
 
   webConfig.begin(settingsStore);

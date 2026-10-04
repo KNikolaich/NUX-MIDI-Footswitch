@@ -375,8 +375,8 @@ void WatchyScreen::render(
     );
   } while (display.nextPage());
 
-  // The full frame was redrawn above. A partial waveform updates the entire
-  // panel for ordinary changes; only the scheduled/AP path uses full refresh.
+  // The full frame was redrawn above. Non-preset status changes may use the
+  // fast partial waveform; the caller selects full refresh after preset changes.
   display.powerOff();
 }
 
