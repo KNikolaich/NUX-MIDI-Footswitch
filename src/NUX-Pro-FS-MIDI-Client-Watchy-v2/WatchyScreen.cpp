@@ -279,15 +279,34 @@ namespace
     display.fillRoundRect(78, 86, 103, 65, 30, GxEPD_WHITE);
     display.drawRoundRect(78, 86, 103, 65, 30, GxEPD_BLACK);
 
-    // Head and pointed ears, drawn over the body to keep the silhouette clean.
+    // Reshape the upper-right body edge into a small raised tail tip, as marked
+    // on the device reference. The original rounded corner is replaced so the
+    // two contours do not print on top of each other.
+    display.fillRect(164, 85, 19, 31, GxEPD_WHITE);
+    display.drawLine(151, 86, 158, 87, GxEPD_BLACK);
+    display.drawLine(158, 87, 164, 90, GxEPD_BLACK);
+    display.drawLine(164, 90, 169, 92, GxEPD_BLACK);
+    display.drawLine(169, 92, 173, 92, GxEPD_BLACK);
+    display.drawLine(173, 92, 176, 95, GxEPD_BLACK);
+    display.drawLine(176, 95, 178, 101, GxEPD_BLACK);
+    display.drawLine(178, 101, 180, 107, GxEPD_BLACK);
+    display.drawLine(180, 107, 181, 112, GxEPD_BLACK);
+    display.drawLine(181, 112, 180, 116, GxEPD_BLACK);
+
+    // Draw matching ears behind the head so their bases meet the head outline
+    // cleanly instead of cutting across the face.
+    display.fillTriangle(47, 74, 54, 34, 83, 62, GxEPD_WHITE);
+    display.drawTriangle(47, 74, 54, 34, 83, 62, GxEPD_BLACK);
+    display.fillTriangle(113, 74, 106, 34, 77, 62, GxEPD_WHITE);
+    display.drawTriangle(113, 74, 106, 34, 77, 62, GxEPD_BLACK);
+    display.fillTriangle(57, 63, 60, 46, 74, 61, GxEPD_WHITE);
+    display.drawTriangle(57, 63, 60, 46, 74, 61, GxEPD_BLACK);
+    display.fillTriangle(103, 63, 100, 46, 86, 61, GxEPD_WHITE);
+    display.drawTriangle(103, 63, 100, 46, 86, 61, GxEPD_BLACK);
+
+    // Head drawn over the ear bases keeps the silhouette clean.
     display.fillCircle(79, 88, 36, GxEPD_WHITE);
     display.drawCircle(79, 88, 36, GxEPD_BLACK);
-    display.fillTriangle(48, 76, 54, 34, 82, 62, GxEPD_WHITE);
-    display.drawTriangle(48, 76, 54, 34, 82, 62, GxEPD_BLACK);
-    display.fillTriangle(99, 61, 127, 31, 133, 77, GxEPD_WHITE);
-    display.drawTriangle(99, 61, 127, 31, 133, 77, GxEPD_BLACK);
-    display.drawTriangle(57, 63, 59, 45, 73, 62, GxEPD_BLACK);
-    display.drawTriangle(107, 62, 123, 43, 127, 67, GxEPD_BLACK);
 
     // Closed eyes and a small muzzle.
     display.drawLine(59, 87, 63, 93, GxEPD_BLACK);
@@ -300,12 +319,28 @@ namespace
     display.drawLine(80, 107, 80, 112, GxEPD_BLACK);
     display.drawLine(80, 112, 74, 116, GxEPD_BLACK);
     display.drawLine(80, 112, 87, 116, GxEPD_BLACK);
+    // Short cheek curves match the red marks on the reference image.
+    display.drawLine(68, 114, 71, 115, GxEPD_BLACK);
+    display.drawLine(71, 115, 75, 113, GxEPD_BLACK);
+    display.drawLine(85, 113, 89, 115, GxEPD_BLACK);
+    display.drawLine(89, 115, 92, 114, GxEPD_BLACK);
 
-    // Paws and a curled tail on the side of the body.
+    // Paws with small toe separations, rather than plain capsule outlines.
     display.fillRoundRect(43, 126, 39, 19, 9, GxEPD_WHITE);
     display.drawRoundRect(43, 126, 39, 19, 9, GxEPD_BLACK);
+    display.drawLine(54, 139, 56, 142, GxEPD_BLACK);
+    display.drawLine(56, 142, 58, 143, GxEPD_BLACK);
+    display.drawLine(69, 139, 67, 142, GxEPD_BLACK);
+    display.drawLine(67, 142, 65, 143, GxEPD_BLACK);
+
     display.fillRoundRect(99, 137, 44, 18, 9, GxEPD_WHITE);
     display.drawRoundRect(99, 137, 44, 18, 9, GxEPD_BLACK);
+    display.drawLine(112, 149, 114, 152, GxEPD_BLACK);
+    display.drawLine(114, 152, 117, 153, GxEPD_BLACK);
+    display.drawLine(132, 149, 130, 152, GxEPD_BLACK);
+    display.drawLine(130, 152, 127, 153, GxEPD_BLACK);
+
+    // The inner curl of the tail.
     display.drawLine(143, 103, 154, 108, GxEPD_BLACK);
     display.drawLine(154, 108, 160, 117, GxEPD_BLACK);
     display.drawLine(160, 117, 157, 127, GxEPD_BLACK);
