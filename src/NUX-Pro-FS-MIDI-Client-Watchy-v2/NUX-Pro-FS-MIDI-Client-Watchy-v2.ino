@@ -16,6 +16,7 @@
 
 #include "ButtonController.h"
 #include "DeviceSettings.h"
+#include "FirmwareVersion.h"
 #include "MidiClient.h"
 #include "WatchyConfig.h"
 #include "WatchyScreen.h"
@@ -120,7 +121,9 @@ namespace
   {
     Serial.println();
     Serial.println("==============================================");
-    Serial.println(" NUX MIDI FOOTSWITCH - WATCHY v2.0");
+    Serial.println(" NUX MIDI FOOTSWITCH");
+    Serial.printf(" Firmware: v%s | Hardware: Watchy v2.0\n",
+      FirmwareVersion::STRING);
     Serial.println(" ESP32-PICO-D4 | 1.54in 200x200 e-paper");
     Serial.println(" Target: NUX MIGHTY PLUG PRO via BLE-MIDI");
     Serial.println("==============================================");

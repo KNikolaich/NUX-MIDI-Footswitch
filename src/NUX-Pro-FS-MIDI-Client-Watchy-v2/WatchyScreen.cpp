@@ -2,7 +2,9 @@
 
 #include <GxEPD2_BW.h>
 #include <SPI.h>
+#include <stdio.h>
 
+#include "FirmwareVersion.h"
 #include "WatchyConfig.h"
 
 namespace
@@ -189,7 +191,12 @@ namespace
   {
     display.fillScreen(GxEPD_WHITE);
 
-    drawHeader(portalActive ? "NUX SETUP / OTA ACTIVE" : "NUX MIDI / WATCHY V2.0");
+    char header[32];
+    if (portalActive)
+      snprintf(header, sizeof(header), "FW v%s / SETUP", FirmwareVersion::STRING);
+    else
+      snprintf(header, sizeof(header), "NUX MIDI / FW v%s", FirmwareVersion::STRING);
+    drawHeader(header);
 
     display.setTextColor(GxEPD_BLACK);
     drawPresetLabel(4, 29, "P2", settings.presets[1]);
