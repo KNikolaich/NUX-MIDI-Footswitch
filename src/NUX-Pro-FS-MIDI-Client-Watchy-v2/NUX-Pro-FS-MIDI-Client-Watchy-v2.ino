@@ -144,6 +144,7 @@ namespace
       return;
     }
 
+    screen.renderSleepScreen();
     Serial.println("[POWER] Entering deep sleep; press any button to wake");
     Serial.flush();
     esp_deep_sleep_start();

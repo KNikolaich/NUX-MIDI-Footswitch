@@ -13,6 +13,7 @@ public:
               bool bleConnected,
               bool portalActive,
               bool fullRefresh);
+  void renderSleepScreen();
 
 private:
   bool _ready = false;

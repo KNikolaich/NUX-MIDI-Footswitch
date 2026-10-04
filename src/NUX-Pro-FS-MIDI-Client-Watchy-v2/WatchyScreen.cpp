@@ -260,6 +260,72 @@ namespace
     display.print(portalActive ? "WEB ON: BACK OFF" : "Hold BACK: setup");
     drawBatteryStatus(battery);
   }
+
+  void drawSleepIllustration()
+  {
+    display.fillScreen(GxEPD_WHITE);
+    display.setFont(nullptr);
+    display.setTextColor(GxEPD_BLACK);
+
+    // Pillow, with a second outline to suggest a soft cushion.
+    display.drawRoundRect(22, 148, 156, 36, 17, GxEPD_BLACK);
+    display.drawRoundRect(28, 153, 144, 26, 13, GxEPD_BLACK);
+    display.drawLine(39, 164, 48, 168, GxEPD_BLACK);
+    display.drawLine(48, 168, 56, 164, GxEPD_BLACK);
+    display.drawLine(145, 164, 153, 168, GxEPD_BLACK);
+    display.drawLine(153, 168, 162, 164, GxEPD_BLACK);
+
+    // Curled-up body.
+    display.fillRoundRect(78, 86, 103, 65, 30, GxEPD_WHITE);
+    display.drawRoundRect(78, 86, 103, 65, 30, GxEPD_BLACK);
+
+    // Head and pointed ears, drawn over the body to keep the silhouette clean.
+    display.fillCircle(79, 88, 36, GxEPD_WHITE);
+    display.drawCircle(79, 88, 36, GxEPD_BLACK);
+    display.fillTriangle(48, 76, 54, 34, 82, 62, GxEPD_WHITE);
+    display.drawTriangle(48, 76, 54, 34, 82, 62, GxEPD_BLACK);
+    display.fillTriangle(99, 61, 127, 31, 133, 77, GxEPD_WHITE);
+    display.drawTriangle(99, 61, 127, 31, 133, 77, GxEPD_BLACK);
+    display.drawTriangle(57, 63, 59, 45, 73, 62, GxEPD_BLACK);
+    display.drawTriangle(107, 62, 123, 43, 127, 67, GxEPD_BLACK);
+
+    // Closed eyes and a small muzzle.
+    display.drawLine(59, 87, 63, 93, GxEPD_BLACK);
+    display.drawLine(63, 93, 69, 95, GxEPD_BLACK);
+    display.drawLine(69, 95, 75, 90, GxEPD_BLACK);
+    display.drawLine(87, 90, 93, 95, GxEPD_BLACK);
+    display.drawLine(93, 95, 99, 93, GxEPD_BLACK);
+    display.drawLine(99, 93, 103, 87, GxEPD_BLACK);
+    display.fillTriangle(74, 101, 86, 101, 80, 107, GxEPD_BLACK);
+    display.drawLine(80, 107, 80, 112, GxEPD_BLACK);
+    display.drawLine(80, 112, 74, 116, GxEPD_BLACK);
+    display.drawLine(80, 112, 87, 116, GxEPD_BLACK);
+
+    // Paws and a curled tail on the side of the body.
+    display.fillRoundRect(43, 126, 39, 19, 9, GxEPD_WHITE);
+    display.drawRoundRect(43, 126, 39, 19, 9, GxEPD_BLACK);
+    display.fillRoundRect(99, 137, 44, 18, 9, GxEPD_WHITE);
+    display.drawRoundRect(99, 137, 44, 18, 9, GxEPD_BLACK);
+    display.drawLine(143, 103, 154, 108, GxEPD_BLACK);
+    display.drawLine(154, 108, 160, 117, GxEPD_BLACK);
+    display.drawLine(160, 117, 157, 127, GxEPD_BLACK);
+    display.drawLine(157, 127, 148, 132, GxEPD_BLACK);
+    display.drawLine(148, 132, 140, 128, GxEPD_BLACK);
+
+    // Sleep marks in the upper-right corner.
+    display.setTextSize(2);
+    display.setCursor(145, 34);
+    display.print('Z');
+    display.setTextSize(1);
+    display.setCursor(166, 48);
+    display.print('z');
+    display.setCursor(177, 37);
+    display.print('z');
+
+    display.setTextSize(1);
+    display.setCursor(69, 190);
+    display.print("DEEP SLEEP");
+  }
 }
 
 bool WatchyScreen::begin()
@@ -311,5 +377,18 @@ void WatchyScreen::render(
 
   // The full frame was redrawn above. A partial waveform updates the entire
   // panel for ordinary changes; only the scheduled/AP path uses full refresh.
+  display.powerOff();
+}
+
+void WatchyScreen::renderSleepScreen()
+{
+  if (!_ready)
+    return;
+
+  display.setFullWindow();
+  display.firstPage();
+  do {
+    drawSleepIllustration();
+  } while (display.nextPage());
   display.powerOff();
 }
