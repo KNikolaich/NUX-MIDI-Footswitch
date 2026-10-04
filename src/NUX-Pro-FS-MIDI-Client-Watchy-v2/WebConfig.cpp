@@ -3,6 +3,7 @@
 #include <Update.h>
 #include <WiFi.h>
 
+#include "FirmwareVersion.h"
 #include "WatchyConfig.h"
 
 namespace
@@ -52,6 +53,53 @@ namespace
       options += F("</option>");
     }
     return options;
+  }
+
+  String doubleTapActionOptions(DoubleTapAction selected)
+  {
+    const DoubleTapAction ACTIONS[] = {
+      DoubleTapAction::Disabled,
+      DoubleTapAction::CycleNext,
+      DoubleTapAction::FixedPreset
+    };
+    const char *VALUES[] = {"off", "cycle", "fixed"};
+    const char *LABELS[] = {
+      "Disabled",
+      "Cycle to next preset",
+      "Use fixed preset"
+    };
+
+    String options;
+    for (uint8_t i = 0; i < 3; ++i) {
+      options += F("<option value=\"");
+      options += VALUES[i];
+      options += '"';
+      if (ACTIONS[i] == selected)
+        options += F(" selected");
+      options += '>';
+      options += LABELS[i];
+      options += F("</option>");
+    }
+    return options;
+  }
+
+  bool parseDoubleTapAction(
+    const String &value,
+    DoubleTapAction &action)
+  {
+    if (value == "off") {
+      action = DoubleTapAction::Disabled;
+      return true;
+    }
+    if (value == "cycle") {
+      action = DoubleTapAction::CycleNext;
+      return true;
+    }
+    if (value == "fixed") {
+      action = DoubleTapAction::FixedPreset;
+      return true;
+    }
+    return false;
   }
 }
 
@@ -205,16 +253,52 @@ String WebConfig::settingsPage() const
     "label{display:block;margin:12px 0 5px}input,select,button{font:inherit;"
     "padding:10px;border-radius:7px;border:1px solid #526575;width:100%;"
     "box-sizing:border-box}button{margin-top:18px;background:#20b8a6;color:#071412;"
-    "font-weight:700;border:0}a{color:#72dacf}</style></head><body>"
-    "<h1>NUX MIDI Watchy v2</h1><p>Four buttons, one preset each.</p>"
+    "font-weight:700;border:0}a{color:#72dacf}.fixed-preset{margin:4px 0 14px}"
+    "</style></head><body>"
+    "<h1>NUX MIDI Footswitch</h1><p>Firmware v@FW_VERSION@ · Hardware Watchy v2.0</p>"
+    "<p>Cycle changes the short-press preset; a fixed preset does not.</p>"
     "<section><form method=\"post\" action=\"/save\">"
     "<label>BLE target name or MAC (up to 22 ASCII characters)</label>"
     "<input name=\"target\" maxlength=\"22\" required value=\"@TARGET@\">"
-    "<label>MENU / GPIO26</label><select name=\"menu\">@MENU@</select>"
-    "<label>BACK / GPIO25 (short press)</label><select name=\"back\">@BACK@</select>"
-    "<label>UP / GPIO35</label><select name=\"up\">@UP@</select>"
-    "<label>DOWN / GPIO4</label><select name=\"down\">@DOWN@</select>"
+    "<label>MENU / GPIO26 — short press preset</label>"
+    "<select name=\"menu\">@MENU@</select>"
+    "<label>MENU double-click action</label>"
+    "<select id=\"menuAction\" name=\"menuAction\">@MENU_ACTION@</select>"
+    "<div id=\"menuFixedWrap\" class=\"fixed-preset\">"
+    "<label>Preset for double-click</label>"
+    "<select name=\"menuDoublePreset\">@MENU_DOUBLE_PRESET@</select></div>"
+    "<label>BACK / GPIO25 — short press preset</label>"
+    "<select name=\"back\">@BACK@</select>"
+    "<label>BACK double-click action</label>"
+    "<select id=\"backAction\" name=\"backAction\">@BACK_ACTION@</select>"
+    "<div id=\"backFixedWrap\" class=\"fixed-preset\">"
+    "<label>Preset for double-click</label>"
+    "<select name=\"backDoublePreset\">@BACK_DOUBLE_PRESET@</select></div>"
+    "<label>UP / GPIO35 — short press preset</label>"
+    "<select name=\"up\">@UP@</select>"
+    "<label>UP double-click action</label>"
+    "<select id=\"upAction\" name=\"upAction\">@UP_ACTION@</select>"
+    "<div id=\"upFixedWrap\" class=\"fixed-preset\">"
+    "<label>Preset for double-click</label>"
+    "<select name=\"upDoublePreset\">@UP_DOUBLE_PRESET@</select></div>"
+    "<label>DOWN / GPIO4 — short press preset</label>"
+    "<select name=\"down\">@DOWN@</select>"
+    "<label>DOWN double-click action</label>"
+    "<select id=\"downAction\" name=\"downAction\">@DOWN_ACTION@</select>"
+    "<div id=\"downFixedWrap\" class=\"fixed-preset\">"
+    "<label>Preset for double-click</label>"
+    "<select name=\"downDoublePreset\">@DOWN_DOUBLE_PRESET@</select></div>"
     "<button type=\"submit\">Save and restart</button></form></section>"
+    "<script>"
+    "function syncDoublePreset(key){"
+    "const action=document.getElementById(key+'Action').value;"
+    "document.getElementById(key+'FixedWrap').hidden=action!=='fixed';}"
+    "window.addEventListener('DOMContentLoaded',function(){"
+    "['menu','back','up','down'].forEach(function(key){"
+    "const select=document.getElementById(key+'Action');"
+    "select.addEventListener('change',function(){syncDoublePreset(key);});"
+    "syncDoublePreset(key);});});"
+    "</script>"
     "<section><h2>Firmware</h2><a href=\"/update\">Open OTA firmware update</a>"
     "<p>Keep the watch connected to USB power during the update.</p>"
     "</section></body></html>"
@@ -224,6 +308,15 @@ String WebConfig::settingsPage() const
   page.replace("@BACK@", presetOptions(settings.presets[1]));
   page.replace("@UP@", presetOptions(settings.presets[2]));
   page.replace("@DOWN@", presetOptions(settings.presets[3]));
+  page.replace("@MENU_ACTION@", doubleTapActionOptions(settings.doubleTapActions[0]));
+  page.replace("@BACK_ACTION@", doubleTapActionOptions(settings.doubleTapActions[1]));
+  page.replace("@UP_ACTION@", doubleTapActionOptions(settings.doubleTapActions[2]));
+  page.replace("@DOWN_ACTION@", doubleTapActionOptions(settings.doubleTapActions[3]));
+  page.replace("@MENU_DOUBLE_PRESET@", presetOptions(settings.doubleTapPresets[0]));
+  page.replace("@BACK_DOUBLE_PRESET@", presetOptions(settings.doubleTapPresets[1]));
+  page.replace("@UP_DOUBLE_PRESET@", presetOptions(settings.doubleTapPresets[2]));
+  page.replace("@DOWN_DOUBLE_PRESET@", presetOptions(settings.doubleTapPresets[3]));
+  page.replace("@FW_VERSION@", FirmwareVersion::STRING);
   page.replace("@TARGET@", escapeHtml(settings.bleTarget));
   return page;
 }
@@ -256,19 +349,52 @@ void WebConfig::handleSave()
   const long up = _server.arg("up").toInt();
   const long down = _server.arg("down").toInt();
 
+  const char *actionArguments[WatchyConfig::BUTTON_COUNT] = {
+    "menuAction", "backAction", "upAction", "downAction"
+  };
+  const char *doublePresetArguments[WatchyConfig::BUTTON_COUNT] = {
+    "menuDoublePreset",
+    "backDoublePreset",
+    "upDoublePreset",
+    "downDoublePreset"
+  };
+  DoubleTapAction doubleTapActions[WatchyConfig::BUTTON_COUNT];
+  uint8_t doubleTapPresets[WatchyConfig::BUTTON_COUNT];
+  bool validDoubleTapSettings = true;
+  for (uint8_t i = 0; i < WatchyConfig::BUTTON_COUNT; ++i) {
+    if (!parseDoubleTapAction(
+          _server.arg(actionArguments[i]),
+          doubleTapActions[i])) {
+      validDoubleTapSettings = false;
+      break;
+    }
+
+    const long doubleTapPreset =
+      _server.arg(doublePresetArguments[i]).toInt();
+    if (doubleTapPreset < 1 ||
+        doubleTapPreset > WatchyConfig::PRESET_COUNT) {
+      validDoubleTapSettings = false;
+      break;
+    }
+    doubleTapPresets[i] = static_cast<uint8_t>(doubleTapPreset);
+  }
+
   if (!validTargetInput(target) ||
       menu < 1 || menu > WatchyConfig::PRESET_COUNT ||
       back < 1 || back > WatchyConfig::PRESET_COUNT ||
       up < 1 || up > WatchyConfig::PRESET_COUNT ||
-      down < 1 || down > WatchyConfig::PRESET_COUNT) {
-    _server.send(400, "text/plain", "Invalid target or preset assignment.");
+      down < 1 || down > WatchyConfig::PRESET_COUNT ||
+      !validDoubleTapSettings) {
+    _server.send(400, "text/plain",
+      "Invalid target, preset assignment, or double-click action.");
     return;
   }
 
   const uint8_t presets[WatchyConfig::BUTTON_COUNT] = {
     (uint8_t)menu, (uint8_t)back, (uint8_t)up, (uint8_t)down
   };
-  if (!_settingsStore->save(target, presets)) {
+  if (!_settingsStore->save(
+        target, presets, doubleTapActions, doubleTapPresets)) {
     _server.send(500, "text/plain", "Could not save settings to NVS.");
     return;
   }

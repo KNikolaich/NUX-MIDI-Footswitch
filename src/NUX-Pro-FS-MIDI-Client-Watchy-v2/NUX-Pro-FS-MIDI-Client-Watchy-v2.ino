@@ -1,7 +1,8 @@
 /*
  * NUX MIGHTY PLUG PRO BLE-MIDI footswitch on Watchy v2.0.
  *
- * Four physical buttons recall or cycle their independently configured presets.
+ * Four physical buttons recall their assigned presets and support configurable
+ * per-button double-tap actions.
  * Holding BACK for 1.6 s toggles the settings/OTA access point; holding MENU
  * for 2 s enters deep sleep, with any button able to wake the ESP32.
  *
@@ -61,12 +62,18 @@ namespace
   {
     const DeviceSettings &settings = settingsStore.get();
     uint8_t presets[WatchyConfig::BUTTON_COUNT];
-    for (uint8_t i = 0; i < WatchyConfig::BUTTON_COUNT; ++i)
+    DoubleTapAction doubleTapActions[WatchyConfig::BUTTON_COUNT];
+    uint8_t doubleTapPresets[WatchyConfig::BUTTON_COUNT];
+    for (uint8_t i = 0; i < WatchyConfig::BUTTON_COUNT; ++i) {
       presets[i] = settings.presets[i];
+      doubleTapActions[i] = settings.doubleTapActions[i];
+      doubleTapPresets[i] = settings.doubleTapPresets[i];
+    }
 
     presets[buttonIndex] =
       (presets[buttonIndex] % WatchyConfig::PRESET_COUNT) + 1;
-    if (!settingsStore.save(settings.bleTarget, presets)) {
+    if (!settingsStore.save(
+          settings.bleTarget, presets, doubleTapActions, doubleTapPresets)) {
       Serial.printf("[SETTINGS] Could not save %s preset assignment\n", buttonName);
       showCurrentState();
       return;
@@ -76,6 +83,31 @@ namespace
       buttonName, presets[buttonIndex]);
     midiClient.sendPreset(presets[buttonIndex]);
     showCurrentState();
+  }
+
+  void handleDoubleTap(uint8_t buttonIndex, const char *buttonName)
+  {
+    const DeviceSettings &settings = settingsStore.get();
+    switch (settings.doubleTapActions[buttonIndex]) {
+      case DoubleTapAction::Disabled:
+        Serial.printf("[BUTTON] %s double tap is disabled\n", buttonName);
+        break;
+      case DoubleTapAction::CycleNext:
+        cycleButtonPreset(buttonIndex, buttonName);
+        break;
+      case DoubleTapAction::FixedPreset: {
+        const uint8_t preset = settings.doubleTapPresets[buttonIndex];
+        Serial.printf("[BUTTON] %s double tap -> fixed preset %u\n",
+          buttonName, preset);
+        midiClient.sendPreset(preset);
+        showCurrentState();
+        break;
+      }
+      default:
+        Serial.printf("[BUTTON] %s double tap has an invalid action\n",
+          buttonName);
+        break;
+    }
   }
 
   bool anyButtonPressed()
@@ -128,7 +160,7 @@ namespace
     Serial.println(" Target: NUX MIGHTY PLUG PRO via BLE-MIDI");
     Serial.println("==============================================");
     Serial.println("Short press a button to send its assigned preset.");
-    Serial.println("Double tap a button to cycle its assignment through presets 1-7.");
+    Serial.println("Double tap follows the per-button action in /settings.");
     Serial.println(" MENU GPIO26, BACK GPIO25, UP GPIO35, DOWN GPIO4");
     Serial.println("Hold BACK for 1.6 s to open/close settings and OTA.");
     Serial.println("Hold MENU for 2 s, release to sleep; any button wakes.");
@@ -153,17 +185,17 @@ namespace
       case ButtonEvent::Down:
         recallButtonPreset(3, "DOWN / GPIO4");
         break;
-      case ButtonEvent::CycleMenuPreset:
-        cycleButtonPreset(0, "MENU / GPIO26");
+      case ButtonEvent::DoubleTapMenu:
+        handleDoubleTap(0, "MENU / GPIO26");
         break;
-      case ButtonEvent::CycleBackPreset:
-        cycleButtonPreset(1, "BACK / GPIO25");
+      case ButtonEvent::DoubleTapBack:
+        handleDoubleTap(1, "BACK / GPIO25");
         break;
-      case ButtonEvent::CycleUpPreset:
-        cycleButtonPreset(2, "UP / GPIO35");
+      case ButtonEvent::DoubleTapUp:
+        handleDoubleTap(2, "UP / GPIO35");
         break;
-      case ButtonEvent::CycleDownPreset:
-        cycleButtonPreset(3, "DOWN / GPIO4");
+      case ButtonEvent::DoubleTapDown:
+        handleDoubleTap(3, "DOWN / GPIO4");
         break;
       case ButtonEvent::EnterDeepSleep:
         enterDeepSleep();

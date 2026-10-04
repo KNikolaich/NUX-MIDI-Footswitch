@@ -3,6 +3,7 @@
 #include <GxEPD2_BW.h>
 #include <SPI.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "FirmwareVersion.h"
 #include "WatchyConfig.h"
@@ -89,15 +90,38 @@ namespace
     };
   }
 
-  void drawPresetLabel(int16_t x, int16_t y, const char *label, uint8_t preset)
+  void drawPresetLabel(
+    int16_t x,
+    int16_t y,
+    const char *label,
+    uint8_t preset,
+    DoubleTapAction doubleTapAction,
+    uint8_t doubleTapPreset)
   {
     display.setTextSize(1);
     display.setTextColor(GxEPD_BLACK);
     display.setCursor(x + 4, y + 11);
     display.print(label);
-    display.setCursor(x + 4, y + 25);
     display.print('=');
     display.print(preset);
+
+    display.setCursor(x + 4, y + 25);
+    switch (doubleTapAction) {
+      case DoubleTapAction::Disabled:
+        display.print("2x:OFF");
+        break;
+      case DoubleTapAction::CycleNext:
+        display.print("2x->");
+        display.print((preset % WatchyConfig::PRESET_COUNT) + 1);
+        break;
+      case DoubleTapAction::FixedPreset:
+        display.print("2x->");
+        display.print(doubleTapPreset);
+        break;
+      default:
+        display.print("2x:?");
+        break;
+    }
   }
 
   void drawHeader(const char *text)
@@ -160,18 +184,22 @@ namespace
 
   void drawBatteryStatus(const BatteryReading &battery)
   {
-    display.setTextSize(1);
-    display.setTextColor(GxEPD_BLACK);
-    display.setCursor(104, 186);
-    if (!battery.valid) {
-      display.print("--%");
-    } else {
-      display.print(battery.percent);
-      display.print('%');
-    }
-
     constexpr int16_t ICON_X = 150;
     constexpr int16_t ICON_Y = 180;
+    char percentText[5];
+    if (battery.valid)
+      snprintf(percentText, sizeof(percentText), "%u%%",
+        static_cast<unsigned>(battery.percent));
+    else
+      snprintf(percentText, sizeof(percentText), "--%%");
+
+    display.setTextSize(1);
+    display.setTextColor(GxEPD_BLACK);
+    const int16_t percentageWidth =
+      static_cast<int16_t>(strlen(percentText) * 6);
+    display.setCursor(ICON_X - 8 - percentageWidth, 186);
+    display.print(percentText);
+
     display.drawRoundRect(ICON_X, ICON_Y, 38, 19, 3, GxEPD_BLACK);
     display.fillRect(ICON_X + 38, ICON_Y + 6, 5, 7, GxEPD_BLACK);
 
@@ -199,10 +227,18 @@ namespace
     drawHeader(header);
 
     display.setTextColor(GxEPD_BLACK);
-    drawPresetLabel(4, 29, "P2", settings.presets[1]);
-    drawPresetLabel(160, 29, "P3", settings.presets[2]);
-    drawPresetLabel(4, 151, "P1", settings.presets[0]);
-    drawPresetLabel(160, 151, "P4", settings.presets[3]);
+    drawPresetLabel(
+      4, 29, "P2", settings.presets[1],
+      settings.doubleTapActions[1], settings.doubleTapPresets[1]);
+    drawPresetLabel(
+      160, 29, "P3", settings.presets[2],
+      settings.doubleTapActions[2], settings.doubleTapPresets[2]);
+    drawPresetLabel(
+      4, 132, "P1", settings.presets[0],
+      settings.doubleTapActions[0], settings.doubleTapPresets[0]);
+    drawPresetLabel(
+      160, 132, "P4", settings.presets[3],
+      settings.doubleTapActions[3], settings.doubleTapPresets[3]);
 
     drawBleStatus(bleConnected);
     drawCurrentPreset(currentPreset, portalActive);
