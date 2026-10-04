@@ -182,6 +182,34 @@ namespace
     display.setTextSize(1);
   }
 
+  void drawQuadraticCurve(
+    int16_t startX,
+    int16_t startY,
+    int16_t controlX,
+    int16_t controlY,
+    int16_t endX,
+    int16_t endY)
+  {
+    constexpr uint8_t CURVE_STEPS = 10;
+    int16_t previousX = startX;
+    int16_t previousY = startY;
+    for (uint8_t step = 1; step <= CURVE_STEPS; ++step) {
+      const float t = step / static_cast<float>(CURVE_STEPS);
+      const float inverseT = 1.0f - t;
+      const int16_t x = static_cast<int16_t>(
+        inverseT * inverseT * startX +
+        2.0f * inverseT * t * controlX +
+        t * t * endX + 0.5f);
+      const int16_t y = static_cast<int16_t>(
+        inverseT * inverseT * startY +
+        2.0f * inverseT * t * controlY +
+        t * t * endY + 0.5f);
+      display.drawLine(previousX, previousY, x, y, GxEPD_BLACK);
+      previousX = x;
+      previousY = y;
+    }
+  }
+
   void drawBatteryStatus(const BatteryReading &battery)
   {
     constexpr int16_t ICON_X = 150;
@@ -283,15 +311,10 @@ namespace
     // on the device reference. The original rounded corner is replaced so the
     // two contours do not print on top of each other.
     display.fillRect(164, 85, 19, 31, GxEPD_WHITE);
-    display.drawLine(151, 86, 158, 87, GxEPD_BLACK);
-    display.drawLine(158, 87, 164, 90, GxEPD_BLACK);
-    display.drawLine(164, 90, 169, 92, GxEPD_BLACK);
-    display.drawLine(169, 92, 173, 92, GxEPD_BLACK);
-    display.drawLine(173, 92, 176, 95, GxEPD_BLACK);
-    display.drawLine(176, 95, 178, 101, GxEPD_BLACK);
-    display.drawLine(178, 101, 180, 107, GxEPD_BLACK);
-    display.drawLine(180, 107, 181, 112, GxEPD_BLACK);
-    display.drawLine(181, 112, 180, 116, GxEPD_BLACK);
+    drawQuadraticCurve(151, 86, 164, 86, 169, 93);
+    drawQuadraticCurve(169, 93, 180, 88, 177, 101);
+    drawQuadraticCurve(177, 101, 181, 108, 180, 116);
+    display.drawLine(180, 116, 181, 117, GxEPD_BLACK);
 
     // Draw matching ears behind the head so their bases meet the head outline
     // cleanly instead of cutting across the face.
@@ -320,10 +343,8 @@ namespace
     display.drawLine(80, 112, 74, 116, GxEPD_BLACK);
     display.drawLine(80, 112, 87, 116, GxEPD_BLACK);
     // Short cheek curves match the red marks on the reference image.
-    display.drawLine(68, 114, 71, 115, GxEPD_BLACK);
-    display.drawLine(71, 115, 75, 113, GxEPD_BLACK);
-    display.drawLine(85, 113, 89, 115, GxEPD_BLACK);
-    display.drawLine(89, 115, 92, 114, GxEPD_BLACK);
+    drawQuadraticCurve(66, 113, 69, 116, 73, 114);
+    drawQuadraticCurve(87, 114, 91, 116, 94, 113);
 
     // Paws with small toe separations, rather than plain capsule outlines.
     display.fillRoundRect(43, 126, 39, 19, 9, GxEPD_WHITE);
