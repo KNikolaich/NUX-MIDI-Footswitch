@@ -81,9 +81,9 @@ HTTP Basic Auth работает поверх обычного HTTP без ши�
 Для OTA нужна таблица разделов с двумя OTA-слотами. Выберите
 `Minimal SPIFFS (1.9MB APP with OTA/190KB SPIFFS)`, а не `Huge App`:
 `Huge App` оставляет один большой раздел приложения и не поддерживает OTA.
-Сборка должна помещаться в один слот — Arduino IDE показывает его предел в
-строке размера прошивки. Размер бинарника для этой конфигурации пока не
-проверен компилятором.
+Для ESP32 core 2.0.17 компилятор сообщает, что скетч использует 1 187 001 байт
+(60% лимита слота 1 966 080 байт); это помещается в OTA-раздел. Другие версии
+библиотек и компилятора могут немного изменить размер.
 
 ## Arduino IDE
 
@@ -117,15 +117,15 @@ HTTP Basic Auth работает поверх обычного HTTP без ши�
 
 Установите через **Sketch → Include Library → Manage Libraries**:
 
-- `Arduino BLE-MIDI` от lathoub — версия 1.4.2 или 1.4.3;
-- `MIDI Library` от FortySevenEffects;
-- `GxEPD2` от Jean-Marc Zingg;
-- `Adafruit GFX Library` и зависимости, которые предложит Arduino IDE.
+- `BLE-MIDI` от lathoub — версия 2.2.0;
+- `MIDI Library` от FortySevenEffects — версия 5.0.2;
+- `NimBLE-Arduino` — версия 1.4.3;
+- `GxEPD2` от Jean-Marc Zingg — версия 1.6.9;
+- `Adafruit GFX Library` — версия 1.12.6 и `Adafruit BusIO` 1.17.4.
 
-Зависимость `NimBLE-Arduino` должна быть установлена для BLE-MIDI; если IDE не
-установит её автоматически, добавьте её через Library Manager. Библиотека
-`Watchy` для этого скетча не нужна: экран запускается через GxEPD2 напрямую,
-без `Watchy::init()`.
+Для client-транспорта BLE-MIDI требуется `NimBLE-Arduino` 1.4.3: ветка 2.x
+удалила API, используемый `BLEMIDI_Client_ESP32`. Библиотека `Watchy` для этого
+скетча не нужна: экран запускается через GxEPD2 напрямую, без `Watchy::init()`.
 
 ### Открытие и загрузка
 
