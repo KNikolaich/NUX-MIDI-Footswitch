@@ -10,10 +10,10 @@ enum class ButtonEvent : uint8_t
   Up,
   Down,
   PortalToggle,
-  CycleMenuPreset,
-  CycleBackPreset,
-  CycleUpPreset,
-  CycleDownPreset,
+  DoubleTapMenu,
+  DoubleTapBack,
+  DoubleTapUp,
+  DoubleTapDown,
   EnterDeepSleep
 };
 

@@ -11,6 +11,12 @@ namespace
   constexpr char PRESET_KEYS[WatchyConfig::BUTTON_COUNT][9] = {
     "menu", "back", "up", "down"
   };
+  constexpr char DOUBLE_TAP_ACTION_KEYS[WatchyConfig::BUTTON_COUNT][12] = {
+    "menudblmode", "backdblmode", "updblmode", "downdblmode"
+  };
+  constexpr char DOUBLE_TAP_PRESET_KEYS[WatchyConfig::BUTTON_COUNT][14] = {
+    "menudblpreset", "backdblpreset", "updblpreset", "downdblpreset"
+  };
   constexpr uint8_t DEFAULT_PRESETS[WatchyConfig::BUTTON_COUNT] = {
     1, 2, 3, 4
   };
@@ -66,6 +72,10 @@ bool DeviceSettingsStore::begin()
   _settings.bleTarget = WatchyConfig::DEFAULT_BLE_TARGET;
   for (uint8_t i = 0; i < WatchyConfig::BUTTON_COUNT; i++)
     _settings.presets[i] = DEFAULT_PRESETS[i];
+  for (uint8_t i = 0; i < WatchyConfig::BUTTON_COUNT; i++) {
+    _settings.doubleTapActions[i] = DoubleTapAction::CycleNext;
+    _settings.doubleTapPresets[i] = DEFAULT_PRESETS[i];
+  }
 
   // Open writable so a clean device creates the namespace on first boot.
   if (!preferences.begin(NVS_NAMESPACE, false))
@@ -81,6 +91,19 @@ bool DeviceSettingsStore::begin()
       preferences.getUChar(PRESET_KEYS[i], DEFAULT_PRESETS[i]);
     if (preset >= 1 && preset <= WatchyConfig::PRESET_COUNT)
       _settings.presets[i] = preset;
+
+    const uint8_t action = preferences.getUChar(
+      DOUBLE_TAP_ACTION_KEYS[i],
+      static_cast<uint8_t>(DoubleTapAction::CycleNext));
+    if (action <= static_cast<uint8_t>(DoubleTapAction::FixedPreset))
+      _settings.doubleTapActions[i] = static_cast<DoubleTapAction>(action);
+
+    const uint8_t doubleTapPreset = preferences.getUChar(
+      DOUBLE_TAP_PRESET_KEYS[i],
+      _settings.presets[i]);
+    if (doubleTapPreset >= 1 &&
+        doubleTapPreset <= WatchyConfig::PRESET_COUNT)
+      _settings.doubleTapPresets[i] = doubleTapPreset;
   }
 
   preferences.end();
@@ -89,12 +112,19 @@ bool DeviceSettingsStore::begin()
 
 bool DeviceSettingsStore::save(
   const String &bleTarget,
-  const uint8_t presets[WatchyConfig::BUTTON_COUNT])
+  const uint8_t presets[WatchyConfig::BUTTON_COUNT],
+  const DoubleTapAction doubleTapActions[WatchyConfig::BUTTON_COUNT],
+  const uint8_t doubleTapPresets[WatchyConfig::BUTTON_COUNT])
 {
   if (!validBleTarget(bleTarget))
     return false;
   for (uint8_t i = 0; i < WatchyConfig::BUTTON_COUNT; i++) {
     if (presets[i] < 1 || presets[i] > WatchyConfig::PRESET_COUNT)
+      return false;
+    if (static_cast<uint8_t>(doubleTapActions[i]) >
+          static_cast<uint8_t>(DoubleTapAction::FixedPreset) ||
+        doubleTapPresets[i] < 1 ||
+        doubleTapPresets[i] > WatchyConfig::PRESET_COUNT)
       return false;
   }
 
@@ -108,6 +138,16 @@ bool DeviceSettingsStore::save(
         sizeof(presets[i])) {
       ok = false;
     }
+    const uint8_t action = static_cast<uint8_t>(doubleTapActions[i]);
+    if (preferences.putUChar(DOUBLE_TAP_ACTION_KEYS[i], action) !=
+        sizeof(action)) {
+      ok = false;
+    }
+    if (preferences.putUChar(
+          DOUBLE_TAP_PRESET_KEYS[i], doubleTapPresets[i]) !=
+        sizeof(doubleTapPresets[i])) {
+      ok = false;
+    }
   }
   preferences.end();
 
@@ -115,8 +155,11 @@ bool DeviceSettingsStore::save(
     return false;
 
   _settings.bleTarget = bleTarget;
-  for (uint8_t i = 0; i < WatchyConfig::BUTTON_COUNT; i++)
+  for (uint8_t i = 0; i < WatchyConfig::BUTTON_COUNT; i++) {
     _settings.presets[i] = presets[i];
+    _settings.doubleTapActions[i] = doubleTapActions[i];
+    _settings.doubleTapPresets[i] = doubleTapPresets[i];
+  }
   return true;
 }
 

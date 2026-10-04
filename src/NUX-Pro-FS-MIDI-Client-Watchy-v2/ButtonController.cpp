@@ -25,10 +25,10 @@ namespace
   ButtonEvent doubleTapEvent(uint8_t buttonIndex)
   {
     switch (buttonIndex) {
-      case 0: return ButtonEvent::CycleMenuPreset;
-      case 1: return ButtonEvent::CycleBackPreset;
-      case 2: return ButtonEvent::CycleUpPreset;
-      case 3: return ButtonEvent::CycleDownPreset;
+      case 0: return ButtonEvent::DoubleTapMenu;
+      case 1: return ButtonEvent::DoubleTapBack;
+      case 2: return ButtonEvent::DoubleTapUp;
+      case 3: return ButtonEvent::DoubleTapDown;
       default: return ButtonEvent::None;
     }
   }
