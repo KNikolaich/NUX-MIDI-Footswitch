@@ -1,17 +1,18 @@
 /*
  * NUX MIGHTY PLUG PRO BLE-MIDI footswitch on Watchy v2.0.
  *
- * Four physical buttons recall four independently configured presets.
- * A short press of BACK recalls its preset; holding BACK for 1.6 s toggles
- * the protected settings/OTA access point.
+ * Four physical buttons recall or cycle their independently configured presets.
+ * Holding BACK for 1.6 s toggles the settings/OTA access point; holding MENU
+ * for 2 s enters deep sleep, with any button able to wake the ESP32.
  *
  * Watchy v2.0 button inputs are active HIGH and use the board's external
  * pull-downs. The e-paper panel is driven directly through GxEPD2; the
- * Watchy framework is intentionally not initialized because its init()
- * starts RTC/accelerometer/watch-face features and enters deep sleep.
+ * Watchy framework is intentionally not initialized; the sketch manages the
+ * display directly and uses ESP32 RTC GPIOs for its own deep-sleep wake.
  */
 
 #include <Arduino.h>
+#include <esp_sleep.h>
 
 #include "ButtonController.h"
 #include "DeviceSettings.h"
@@ -55,6 +56,66 @@ namespace
     showCurrentState();
   }
 
+  void cycleButtonPreset(uint8_t buttonIndex, const char *buttonName)
+  {
+    const DeviceSettings &settings = settingsStore.get();
+    uint8_t presets[WatchyConfig::BUTTON_COUNT];
+    for (uint8_t i = 0; i < WatchyConfig::BUTTON_COUNT; ++i)
+      presets[i] = settings.presets[i];
+
+    presets[buttonIndex] =
+      (presets[buttonIndex] % WatchyConfig::PRESET_COUNT) + 1;
+    if (!settingsStore.save(settings.bleTarget, presets)) {
+      Serial.printf("[SETTINGS] Could not save %s preset assignment\n", buttonName);
+      showCurrentState();
+      return;
+    }
+
+    Serial.printf("[BUTTON] %s double tap -> preset %u\n",
+      buttonName, presets[buttonIndex]);
+    midiClient.sendPreset(presets[buttonIndex]);
+    showCurrentState();
+  }
+
+  bool anyButtonPressed()
+  {
+    return digitalRead(WatchyConfig::MENU_BTN_PIN) == WatchyConfig::BUTTON_PRESSED_LEVEL ||
+           digitalRead(WatchyConfig::BACK_BTN_PIN) == WatchyConfig::BUTTON_PRESSED_LEVEL ||
+           digitalRead(WatchyConfig::UP_BTN_PIN) == WatchyConfig::BUTTON_PRESSED_LEVEL ||
+           digitalRead(WatchyConfig::DOWN_BTN_PIN) == WatchyConfig::BUTTON_PRESSED_LEVEL;
+  }
+
+  void enterDeepSleep()
+  {
+    Serial.println("[POWER] Releasing buttons before deep sleep");
+    if (webConfig.portalActive()) {
+      webConfig.togglePortal();
+      showCurrentState(true);
+    }
+
+    do {
+      while (anyButtonPressed())
+        delay(10);
+      delay(WatchyConfig::BUTTON_DEBOUNCE_MS + 20);
+    } while (anyButtonPressed());
+
+    const uint64_t wakeMask =
+      (1ULL << WatchyConfig::MENU_BTN_PIN) |
+      (1ULL << WatchyConfig::BACK_BTN_PIN) |
+      (1ULL << WatchyConfig::UP_BTN_PIN) |
+      (1ULL << WatchyConfig::DOWN_BTN_PIN);
+    const esp_err_t wakeConfig =
+      esp_sleep_enable_ext1_wakeup(wakeMask, ESP_EXT1_WAKEUP_ANY_HIGH);
+    if (wakeConfig != ESP_OK) {
+      Serial.printf("[POWER] Could not configure button wake: %d\n", wakeConfig);
+      return;
+    }
+
+    Serial.println("[POWER] Entering deep sleep; press any button to wake");
+    Serial.flush();
+    esp_deep_sleep_start();
+  }
+
   void printStartupGuide()
   {
     Serial.println();
@@ -63,9 +124,11 @@ namespace
     Serial.println(" ESP32-PICO-D4 | 1.54in 200x200 e-paper");
     Serial.println(" Target: NUX MIGHTY PLUG PRO via BLE-MIDI");
     Serial.println("==============================================");
-    Serial.println("Short press a button to send its preset:");
+    Serial.println("Short press a button to send its assigned preset.");
+    Serial.println("Double tap a button to cycle its assignment through presets 1-7.");
     Serial.println(" MENU GPIO26, BACK GPIO25, UP GPIO35, DOWN GPIO4");
     Serial.println("Hold BACK for 1.6 s to open/close settings and OTA.");
+    Serial.println("Hold MENU for 2 s, release to sleep; any button wakes.");
     Serial.println("BLE stays active; WiFi AP is off except in setup mode.");
     Serial.println("RTC, accelerometer, time sync and vibration are unused.");
     Serial.println("Serial Monitor: 115200 baud");
@@ -87,6 +150,21 @@ namespace
       case ButtonEvent::Down:
         recallButtonPreset(3, "DOWN / GPIO4");
         break;
+      case ButtonEvent::CycleMenuPreset:
+        cycleButtonPreset(0, "MENU / GPIO26");
+        break;
+      case ButtonEvent::CycleBackPreset:
+        cycleButtonPreset(1, "BACK / GPIO25");
+        break;
+      case ButtonEvent::CycleUpPreset:
+        cycleButtonPreset(2, "UP / GPIO35");
+        break;
+      case ButtonEvent::CycleDownPreset:
+        cycleButtonPreset(3, "DOWN / GPIO4");
+        break;
+      case ButtonEvent::EnterDeepSleep:
+        enterDeepSleep();
+        break;
       case ButtonEvent::PortalToggle:
         webConfig.togglePortal();
         // Switching the AP screen changes several static fields and must clear
@@ -104,6 +182,10 @@ void setup()
 {
   Serial.begin(115200);
   delay(200);
+  const bool wokeByButton =
+    esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_EXT1;
+  if (wokeByButton)
+    Serial.println("[POWER] Woke from deep sleep via a button");
   printStartupGuide();
 
   if (!settingsStore.begin())
@@ -122,7 +204,7 @@ void setup()
   digitalWrite(WatchyConfig::VIBRATION_MOTOR_PIN, LOW);
   pinMode(WatchyConfig::VIBRATION_MOTOR_PIN, OUTPUT);
 
-  buttons.begin();
+  buttons.begin(wokeByButton);
   if (!screen.begin())
     Serial.println("[DISPLAY] E-paper initialization failed.");
   screen.render(settings, 1, false, false, true);

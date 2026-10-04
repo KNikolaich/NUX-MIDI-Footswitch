@@ -145,11 +145,11 @@ namespace
     display.setFont(nullptr);
     display.setTextColor(GxEPD_BLACK);
     if (portalActive) {
-      display.setTextSize(3);
-      display.setCursor(82, 68);
+      display.setTextSize(4);
+      display.setCursor(76, 61);
     } else {
-      display.setTextSize(5);
-      display.setCursor(70, 111);
+      display.setTextSize(7);
+      display.setCursor(58, 102);
     }
     display.print('P');
     display.print(currentPreset);
@@ -160,17 +160,24 @@ namespace
   {
     display.setTextSize(1);
     display.setTextColor(GxEPD_BLACK);
-    display.setCursor(104, 191);
+    display.setCursor(104, 186);
     if (!battery.valid) {
-      display.print("BAT --.-V --%");
-      return;
+      display.print("--%");
+    } else {
+      display.print(battery.percent);
+      display.print('%');
     }
 
-    display.print(battery.voltage <= 3.50f ? "LOW " : "BAT ");
-    display.print(battery.voltage, 2);
-    display.print("V ~");
-    display.print(battery.percent);
-    display.print('%');
+    constexpr int16_t ICON_X = 150;
+    constexpr int16_t ICON_Y = 180;
+    display.drawRoundRect(ICON_X, ICON_Y, 38, 19, 3, GxEPD_BLACK);
+    display.fillRect(ICON_X + 38, ICON_Y + 6, 5, 7, GxEPD_BLACK);
+
+    uint8_t bars = 0;
+    if (battery.valid)
+      bars = (battery.percent + 24) / 25;
+    for (uint8_t i = 0; i < bars; ++i)
+      display.fillRect(ICON_X + 5 + i * 7, ICON_Y + 5, 5, 9, GxEPD_BLACK);
   }
 
   void drawCompleteScreen(

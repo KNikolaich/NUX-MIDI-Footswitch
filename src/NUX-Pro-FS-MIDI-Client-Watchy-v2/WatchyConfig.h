@@ -31,7 +31,9 @@ namespace WatchyConfig
   // while pressed. GPIO35 has no internal pull-up/down.
   constexpr uint8_t BUTTON_PRESSED_LEVEL = HIGH;
   constexpr uint32_t BUTTON_DEBOUNCE_MS = 35;
+  constexpr uint32_t BUTTON_DOUBLE_TAP_MS = 350;
   constexpr uint32_t PORTAL_HOLD_MS = 1600;
+  constexpr uint32_t DEEP_SLEEP_HOLD_MS = 2000;
   constexpr uint32_t PORTAL_IDLE_TIMEOUT_MS = 180000;
   constexpr uint32_t BATTERY_DISPLAY_REFRESH_MS = 300000;
 

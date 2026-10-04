@@ -9,13 +9,18 @@ enum class ButtonEvent : uint8_t
   Back,
   Up,
   Down,
-  PortalToggle
+  PortalToggle,
+  CycleMenuPreset,
+  CycleBackPreset,
+  CycleUpPreset,
+  CycleDownPreset,
+  EnterDeepSleep
 };
 
 class ButtonController
 {
 public:
-  void begin();
+  void begin(bool ignoreButtonsHeldAtBoot = false);
   ButtonEvent poll();
 
 private:
@@ -24,8 +29,11 @@ private:
     bool lastRawPressed = false;
     bool stablePressed = false;
     bool longPressHandled = false;
+    bool pendingTap = false;
+    bool doubleTapInProgress = false;
     uint32_t changedAt = 0;
     uint32_t pressedAt = 0;
+    uint32_t pendingTapAt = 0;
   };
 
   ButtonState _states[4];
