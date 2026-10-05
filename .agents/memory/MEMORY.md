@@ -1,3 +1,4 @@
 - [NUX MIDI protocol](nux-mighty-plug-pro-midi.md) — Mighty Plug Pro uses Program Change for presets and private SysEx for current-preset retrieval.
 - [ESP32 validation](esp32-validation.md) — Arduino CLI is installed, but its Nix launcher hits nested-bwrap restrictions; verify platform packages before compiling.
 - [Watchy e-paper refresh](watchy-epaper-refresh.md) — preset changes need a full refresh; D67 fast partial updates leave visible remnants.
+- [Sleep-screen artwork](sleep-screen-artwork.md) — use the user's 200×200 raster at 1:1; no added pillow, text, or decorative overlays.
