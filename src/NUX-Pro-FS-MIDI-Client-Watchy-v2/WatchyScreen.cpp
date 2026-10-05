@@ -210,6 +210,79 @@ namespace
     }
   }
 
+  bool polygonContainsPoint(
+    int16_t x,
+    int16_t y,
+    const int16_t *vertices,
+    uint8_t pointCount)
+  {
+    bool inside = false;
+    for (uint8_t i = 0, j = pointCount - 1; i < pointCount; j = i++) {
+      const int16_t xi = vertices[i * 2];
+      const int16_t yi = vertices[i * 2 + 1];
+      const int16_t xj = vertices[j * 2];
+      const int16_t yj = vertices[j * 2 + 1];
+      if ((yi > y) != (yj > y)) {
+        const int32_t intersectionX =
+          xi + static_cast<int32_t>(xj - xi) * (y - yi) / (yj - yi);
+        if (x < intersectionX)
+          inside = !inside;
+      }
+    }
+    return inside;
+  }
+
+  void fillPatternPolygon(
+    const int16_t *vertices,
+    uint8_t pointCount,
+    uint16_t color,
+    uint8_t densityThreshold)
+  {
+    static constexpr uint8_t BAYER_4X4[4][4] = {
+      {0, 8, 2, 10},
+      {12, 4, 14, 6},
+      {3, 11, 1, 9},
+      {15, 7, 13, 5},
+    };
+
+    int16_t minX = vertices[0];
+    int16_t maxX = vertices[0];
+    int16_t minY = vertices[1];
+    int16_t maxY = vertices[1];
+    for (uint8_t i = 1; i < pointCount; ++i) {
+      minX = min(minX, vertices[i * 2]);
+      maxX = max(maxX, vertices[i * 2]);
+      minY = min(minY, vertices[i * 2 + 1]);
+      maxY = max(maxY, vertices[i * 2 + 1]);
+    }
+
+    for (int16_t y = minY; y <= maxY; ++y) {
+      for (int16_t x = minX; x <= maxX; ++x) {
+        if (!polygonContainsPoint(x, y, vertices, pointCount))
+          continue;
+
+        if (color == GxEPD_WHITE ||
+            BAYER_4X4[y & 3][x & 3] < densityThreshold) {
+          display.drawPixel(x, y, color);
+        }
+      }
+    }
+  }
+
+  void drawPolygonOutline(const int16_t *vertices, uint8_t pointCount)
+  {
+    for (uint8_t i = 0; i < pointCount; ++i) {
+      const uint8_t next = (i + 1) % pointCount;
+      display.drawLine(
+        vertices[i * 2],
+        vertices[i * 2 + 1],
+        vertices[next * 2],
+        vertices[next * 2 + 1],
+        GxEPD_BLACK
+      );
+    }
+  }
+
   void drawBatteryStatus(const BatteryReading &battery)
   {
     constexpr int16_t ICON_X = 150;
@@ -303,79 +376,162 @@ namespace
     display.drawLine(145, 164, 153, 168, GxEPD_BLACK);
     display.drawLine(153, 168, 162, 164, GxEPD_BLACK);
 
-    // Curled-up body.
-    display.fillRoundRect(78, 86, 103, 65, 30, GxEPD_WHITE);
-    display.drawRoundRect(78, 86, 103, 65, 30, GxEPD_BLACK);
+    // 4x4 ordered dithering approximates 30% orange and 50% red on the
+    // monochrome panel: thresholds 5/16 and 8/16, respectively.
+    constexpr uint8_t ORANGE_DENSITY = 5;
+    constexpr uint8_t RED_DENSITY = 8;
 
-    // Reshape the upper-right body edge into a small raised tail tip, as marked
-    // on the device reference. The original rounded corner is replaced so the
-    // two contours do not print on top of each other.
-    display.fillRect(164, 85, 19, 31, GxEPD_WHITE);
-    drawQuadraticCurve(151, 86, 164, 86, 169, 93);
-    drawQuadraticCurve(169, 93, 180, 88, 177, 101);
-    drawQuadraticCurve(177, 101, 181, 108, 180, 116);
-    display.drawLine(180, 116, 181, 117, GxEPD_BLACK);
+    // Small raised tail behind the rump.
+    const int16_t tail[] = {150, 99, 153, 91, 158, 85, 163, 97, 159, 104};
+    fillPatternPolygon(
+      tail, sizeof(tail) / sizeof(tail[0]) / 2, GxEPD_BLACK, ORANGE_DENSITY);
+    drawPolygonOutline(tail, sizeof(tail) / sizeof(tail[0]) / 2);
 
-    // Draw matching ears behind the head so their bases meet the head outline
-    // cleanly instead of cutting across the face.
-    display.fillTriangle(47, 74, 54, 34, 83, 62, GxEPD_WHITE);
-    display.drawTriangle(47, 74, 54, 34, 83, 62, GxEPD_BLACK);
-    display.fillTriangle(113, 74, 106, 34, 77, 62, GxEPD_WHITE);
-    display.drawTriangle(113, 74, 106, 34, 77, 62, GxEPD_BLACK);
-    display.fillTriangle(57, 63, 60, 46, 74, 61, GxEPD_WHITE);
-    display.drawTriangle(57, 63, 60, 46, 74, 61, GxEPD_BLACK);
-    display.fillTriangle(103, 63, 100, 46, 86, 61, GxEPD_WHITE);
-    display.drawTriangle(103, 63, 100, 46, 86, 61, GxEPD_BLACK);
+    // Low, elongated body with a stippled orange back and white underside.
+    const int16_t body[] = {
+      77, 110, 78, 101, 83, 94, 92, 89, 105, 87, 123, 88, 138, 91,
+      149, 96, 157, 103, 162, 113, 164, 122, 161, 131, 154, 137,
+      143, 141, 128, 143, 111, 143, 97, 139, 85, 133, 78, 126, 75, 118
+    };
+    fillPatternPolygon(
+      body, sizeof(body) / sizeof(body[0]) / 2, GxEPD_WHITE, 16);
+    const int16_t orangeBack[] = {
+      81, 110, 82, 101, 87, 96, 95, 91, 107, 89, 123, 90, 138, 93,
+      148, 98, 155, 105, 159, 113, 159, 119, 151, 122, 141, 123,
+      128, 122, 114, 120, 101, 119, 90, 118, 83, 116
+    };
+    fillPatternPolygon(
+      orangeBack,
+      sizeof(orangeBack) / sizeof(orangeBack[0]) / 2,
+      GxEPD_BLACK,
+      ORANGE_DENSITY
+    );
+    drawPolygonOutline(body, sizeof(body) / sizeof(body[0]) / 2);
 
-    // Head drawn over the ear bases keeps the silhouette clean.
-    display.fillCircle(79, 88, 36, GxEPD_WHITE);
-    display.drawCircle(79, 88, 36, GxEPD_BLACK);
+    // Ears sit behind the head. One inner ear has the denser red/pink pattern.
+    const int16_t farEar[] = {
+      46, 91, 42, 69, 44, 63, 48, 60, 53, 64, 64, 86
+    };
+    fillPatternPolygon(
+      farEar, sizeof(farEar) / sizeof(farEar[0]) / 2,
+      GxEPD_WHITE, 16);
+    const int16_t farEarOrange[] = {
+      46, 86, 44, 69, 46, 64, 49, 63, 53, 67, 61, 85
+    };
+    fillPatternPolygon(
+      farEarOrange,
+      sizeof(farEarOrange) / sizeof(farEarOrange[0]) / 2,
+      GxEPD_BLACK,
+      ORANGE_DENSITY
+    );
+    drawPolygonOutline(farEar, sizeof(farEar) / sizeof(farEar[0]) / 2);
 
-    // Closed eyes and a small muzzle.
-    display.drawLine(59, 87, 63, 93, GxEPD_BLACK);
-    display.drawLine(63, 93, 69, 95, GxEPD_BLACK);
-    display.drawLine(69, 95, 75, 90, GxEPD_BLACK);
-    display.drawLine(87, 90, 93, 95, GxEPD_BLACK);
-    display.drawLine(93, 95, 99, 93, GxEPD_BLACK);
-    display.drawLine(99, 93, 103, 87, GxEPD_BLACK);
-    display.fillTriangle(74, 101, 86, 101, 80, 107, GxEPD_BLACK);
-    display.drawLine(80, 107, 80, 112, GxEPD_BLACK);
-    display.drawLine(80, 112, 74, 116, GxEPD_BLACK);
-    display.drawLine(80, 112, 87, 116, GxEPD_BLACK);
-    // Short cheek curves match the red marks on the reference image.
-    drawQuadraticCurve(66, 113, 69, 116, 73, 114);
-    drawQuadraticCurve(87, 114, 91, 116, 94, 113);
+    const int16_t nearEar[] = {
+      71, 88, 78, 64, 81, 58, 85, 54, 90, 59, 97, 91
+    };
+    fillPatternPolygon(
+      nearEar, sizeof(nearEar) / sizeof(nearEar[0]) / 2,
+      GxEPD_WHITE, 16);
+    const int16_t nearEarOrange[] = {
+      75, 83, 80, 65, 83, 58, 86, 59, 90, 63, 94, 86
+    };
+    fillPatternPolygon(
+      nearEarOrange,
+      sizeof(nearEarOrange) / sizeof(nearEarOrange[0]) / 2,
+      GxEPD_BLACK,
+      ORANGE_DENSITY
+    );
+    const int16_t redInnerEar[] = {
+      79, 79, 83, 63, 85, 60, 88, 64, 91, 81
+    };
+    fillPatternPolygon(
+      redInnerEar,
+      sizeof(redInnerEar) / sizeof(redInnerEar[0]) / 2,
+      GxEPD_BLACK,
+      RED_DENSITY
+    );
+    drawPolygonOutline(nearEar, sizeof(nearEar) / sizeof(nearEar[0]) / 2);
 
-    // Paws with small toe separations, rather than plain capsule outlines.
-    display.fillRoundRect(43, 126, 39, 19, 9, GxEPD_WHITE);
-    display.drawRoundRect(43, 126, 39, 19, 9, GxEPD_BLACK);
-    display.drawLine(54, 139, 56, 142, GxEPD_BLACK);
-    display.drawLine(56, 142, 58, 143, GxEPD_BLACK);
-    display.drawLine(69, 139, 67, 142, GxEPD_BLACK);
-    display.drawLine(67, 142, 65, 143, GxEPD_BLACK);
+    // Side-profile head with a white muzzle and blaze.
+    const int16_t head[] = {
+      50, 103, 47, 98, 48, 91, 52, 84, 58, 79, 66, 76, 74, 77,
+      82, 80, 89, 86, 95, 94, 98, 102, 98, 109, 94, 116, 87, 122,
+      78, 126, 68, 127, 59, 124, 52, 121, 47, 117, 42, 114,
+      39, 111, 39, 107, 42, 104, 47, 102
+    };
+    fillPatternPolygon(
+      head, sizeof(head) / sizeof(head[0]) / 2, GxEPD_WHITE, 16);
+    const int16_t leftOrange[] = {
+      48, 103, 47, 96, 51, 88, 58, 82, 66, 78, 73, 78, 78, 83,
+      75, 90, 70, 97, 64, 102, 56, 106, 50, 108
+    };
+    fillPatternPolygon(
+      leftOrange,
+      sizeof(leftOrange) / sizeof(leftOrange[0]) / 2,
+      GxEPD_BLACK,
+      ORANGE_DENSITY
+    );
+    const int16_t rightOrange[] = {
+      75, 78, 82, 81, 89, 87, 94, 94, 97, 102, 95, 109,
+      90, 113, 84, 110, 84, 103, 87, 98, 82, 92, 78, 88
+    };
+    fillPatternPolygon(
+      rightOrange,
+      sizeof(rightOrange) / sizeof(rightOrange[0]) / 2,
+      GxEPD_BLACK,
+      ORANGE_DENSITY
+    );
+    const int16_t whiteBlaze[] = {
+      67, 78, 72, 78, 77, 83, 75, 90, 71, 97, 66, 103,
+      60, 108, 55, 108, 60, 101, 64, 94, 65, 86
+    };
+    fillPatternPolygon(
+      whiteBlaze, sizeof(whiteBlaze) / sizeof(whiteBlaze[0]) / 2,
+      GxEPD_WHITE, 16);
+    drawPolygonOutline(head, sizeof(head) / sizeof(head[0]) / 2);
 
-    display.fillRoundRect(99, 137, 44, 18, 9, GxEPD_WHITE);
-    display.drawRoundRect(99, 137, 44, 18, 9, GxEPD_BLACK);
-    display.drawLine(112, 149, 114, 152, GxEPD_BLACK);
-    display.drawLine(114, 152, 117, 153, GxEPD_BLACK);
-    display.drawLine(132, 149, 130, 152, GxEPD_BLACK);
-    display.drawLine(130, 152, 127, 153, GxEPD_BLACK);
+    // White paws tucked under the chest and at the rear.
+    const int16_t frontPaw[] = {
+      88, 124, 94, 126, 100, 130, 106, 136, 106, 141,
+      102, 144, 95, 143, 90, 139, 87, 133
+    };
+    fillPatternPolygon(
+      frontPaw, sizeof(frontPaw) / sizeof(frontPaw[0]) / 2,
+      GxEPD_WHITE, 16);
+    drawPolygonOutline(frontPaw, sizeof(frontPaw) / sizeof(frontPaw[0]) / 2);
+    drawQuadraticCurve(95, 138, 96, 141, 98, 142);
+    drawQuadraticCurve(101, 137, 101, 140, 100, 142);
 
-    // The inner curl of the tail.
-    display.drawLine(143, 103, 154, 108, GxEPD_BLACK);
-    display.drawLine(154, 108, 160, 117, GxEPD_BLACK);
-    display.drawLine(160, 117, 157, 127, GxEPD_BLACK);
-    display.drawLine(157, 127, 148, 132, GxEPD_BLACK);
-    display.drawLine(148, 132, 140, 128, GxEPD_BLACK);
+    const int16_t rearPaw[] = {
+      139, 129, 146, 128, 153, 130, 157, 134, 156, 138,
+      151, 141, 143, 140, 138, 136
+    };
+    fillPatternPolygon(
+      rearPaw, sizeof(rearPaw) / sizeof(rearPaw[0]) / 2,
+      GxEPD_WHITE, 16);
+    drawPolygonOutline(rearPaw, sizeof(rearPaw) / sizeof(rearPaw[0]) / 2);
+    display.drawLine(148, 136, 147, 139, GxEPD_BLACK);
+    display.drawLine(152, 136, 151, 139, GxEPD_BLACK);
 
-    // Sleep marks in the upper-right corner.
+    // Sleeping side-profile face: closed eye, nose, mouth and a pink tongue.
+    drawQuadraticCurve(59, 96, 63, 100, 68, 97);
+    display.fillCircle(40, 107, 3, GxEPD_BLACK);
+    display.drawLine(41, 109, 44, 112, GxEPD_BLACK);
+    display.drawLine(44, 112, 50, 113, GxEPD_BLACK);
+    const int16_t tongue[] = {47, 113, 53, 113, 55, 116, 53, 119, 49, 119, 47, 116};
+    fillPatternPolygon(
+      tongue, sizeof(tongue) / sizeof(tongue[0]) / 2,
+      GxEPD_BLACK, RED_DENSITY);
+    drawPolygonOutline(tongue, sizeof(tongue) / sizeof(tongue[0]) / 2);
+
+    // "Zzz" sits above the dog's head.
     display.setTextSize(2);
-    display.setCursor(145, 34);
+    display.setCursor(112, 37);
     display.print('Z');
     display.setTextSize(1);
-    display.setCursor(166, 48);
+    display.setCursor(132, 52);
     display.print('z');
-    display.setCursor(177, 37);
+    display.setCursor(144, 43);
     display.print('z');
 
     display.setTextSize(1);
