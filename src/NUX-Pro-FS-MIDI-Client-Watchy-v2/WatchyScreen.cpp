@@ -389,16 +389,16 @@ namespace
 
     // Low, elongated body with a stippled orange back and white underside.
     const int16_t body[] = {
-      77, 110, 78, 101, 83, 94, 92, 89, 105, 87, 123, 88, 138, 91,
-      149, 96, 157, 103, 162, 113, 164, 122, 161, 131, 154, 137,
-      143, 141, 128, 143, 111, 143, 97, 139, 85, 133, 78, 126, 75, 118
+      77, 113, 78, 104, 83, 97, 92, 92, 105, 90, 123, 91, 138, 94,
+      149, 99, 157, 106, 162, 116, 164, 125, 161, 134, 154, 140,
+      143, 144, 128, 146, 111, 146, 97, 142, 85, 136, 78, 129, 75, 121
     };
     fillPatternPolygon(
       body, sizeof(body) / sizeof(body[0]) / 2, GxEPD_WHITE, 16);
     const int16_t orangeBack[] = {
-      81, 110, 82, 101, 87, 96, 95, 91, 107, 89, 123, 90, 138, 93,
-      148, 98, 155, 105, 159, 113, 159, 119, 151, 122, 141, 123,
-      128, 122, 114, 120, 101, 119, 90, 118, 83, 116
+      81, 113, 82, 104, 87, 99, 95, 94, 107, 92, 123, 93, 138, 96,
+      148, 101, 155, 108, 159, 116, 159, 122, 151, 125, 141, 126,
+      128, 125, 114, 123, 101, 122, 90, 121, 83, 119
     };
     fillPatternPolygon(
       orangeBack,
@@ -492,26 +492,26 @@ namespace
 
     // White paws tucked under the chest and at the rear.
     const int16_t frontPaw[] = {
-      88, 124, 94, 126, 100, 130, 106, 136, 106, 141,
-      102, 144, 95, 143, 90, 139, 87, 133
+      88, 127, 94, 129, 100, 133, 106, 139, 106, 144,
+      102, 147, 95, 146, 90, 142, 87, 136
     };
     fillPatternPolygon(
       frontPaw, sizeof(frontPaw) / sizeof(frontPaw[0]) / 2,
       GxEPD_WHITE, 16);
     drawPolygonOutline(frontPaw, sizeof(frontPaw) / sizeof(frontPaw[0]) / 2);
-    drawQuadraticCurve(95, 138, 96, 141, 98, 142);
-    drawQuadraticCurve(101, 137, 101, 140, 100, 142);
+    drawQuadraticCurve(95, 141, 96, 144, 98, 145);
+    drawQuadraticCurve(101, 140, 101, 143, 100, 145);
 
     const int16_t rearPaw[] = {
-      139, 129, 146, 128, 153, 130, 157, 134, 156, 138,
-      151, 141, 143, 140, 138, 136
+      139, 132, 146, 131, 153, 133, 157, 137, 156, 141,
+      151, 144, 143, 143, 138, 139
     };
     fillPatternPolygon(
       rearPaw, sizeof(rearPaw) / sizeof(rearPaw[0]) / 2,
       GxEPD_WHITE, 16);
     drawPolygonOutline(rearPaw, sizeof(rearPaw) / sizeof(rearPaw[0]) / 2);
-    display.drawLine(148, 136, 147, 139, GxEPD_BLACK);
-    display.drawLine(152, 136, 151, 139, GxEPD_BLACK);
+    display.drawLine(148, 139, 147, 142, GxEPD_BLACK);
+    display.drawLine(152, 139, 151, 142, GxEPD_BLACK);
 
     // Sleeping side-profile face: closed eye, nose, mouth and a pink tongue.
     drawQuadraticCurve(59, 96, 63, 100, 68, 97);
@@ -526,12 +526,12 @@ namespace
 
     // "Zzz" sits above the dog's head.
     display.setTextSize(2);
-    display.setCursor(112, 37);
+    display.setCursor(103, 37);
     display.print('Z');
     display.setTextSize(1);
-    display.setCursor(132, 52);
+    display.setCursor(122, 52);
     display.print('z');
-    display.setCursor(144, 43);
+    display.setCursor(134, 43);
     display.print('z');
 
     display.setTextSize(1);
